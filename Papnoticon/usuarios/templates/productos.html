@@ -1,11 +1,58 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Productos</title>
-    <!-- Enlace a Bootstrap -->
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+     <!-- Enlace a los íconos de Bootstrap -->
+     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        /* Estilos personalizados */
+        body {
+            background-color: #1c1c1e;
+            color: #ffffff;
+        }
+
+        .card {
+            background-color: #2c2c2e;
+            border-radius: 10px;
+            padding: 20px;
+            color: #ffffff;
+        }
+
+        .card-title {
+            font-weight: bold;
+            font-size: 1.5em;
+            color: #ffffff;
+        }
+
+        .card-text {
+            color: #ffffff; /* Cambia el color del texto de descripción y stock a blanco */
+        }
+
+        .btn-secondary {
+            background-color: #3a3a3c;
+            border: none;
+            width: 100%;
+        }
+
+        .btn-secondary:hover {
+            background-color: #4a4a4c;
+        }
+
+        .btn-outline-light {
+            border-color: #6c757d;
+            color: #6c757d;
+        }
+
+        .btn-outline-light:hover {
+            background-color: #6c757d;
+            color: #ffffff;
+        }
+    </style>
 </head>
 <body>
     <!-- Barra de Navegación -->
@@ -17,74 +64,84 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="{% url 'pagina_inicio' %}">Inicio</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'productos' %}">Productos</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Contacto</a></li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'pagina_inicio' %}">Inicio</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link active" href="{% url 'productos' %}">Productos</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Contacto</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">
+                        <!-- Botón de Carrito redirigiendo a la página del carrito -->
+                        <a class="nav-link" href="{% url 'ver_carrito' %}">
                             <i class="bi bi-cart"></i> Carrito
                         </a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'logout' %}">Cerrar Sesión</a>  <!-- Botón de Cerrar Sesión -->
-                    </li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'logout' %}">Cerrar Sesión</a></li>
                 </ul>
             </div>
         </div>
     </nav>
 
-    <!-- Título de la Página -->
-    <div class="container mt-5">
-        <h1 class="text-center">Productos</h1>
+    <!-- Contenedor principal de Productos -->
+    <div class="container mt-5 text-center">
+        <h1 class="fw-bold">Productos</h1>
+        <p>Escoge el producto que mejor se ajuste a tus necesidades</p>
 
         <!-- Campo de Búsqueda -->
         <div class="row my-4">
             <div class="col-md-6 offset-md-3">
                 <form class="d-flex" method="GET" action="{% url 'productos' %}">
                     <input class="form-control me-2" type="search" name="q" placeholder="Buscar productos" aria-label="Buscar" value="{{ request.GET.q }}">
-                    <button class="btn btn-outline-primary" type="submit">Buscar</button>
+                    <button class="btn btn-outline-light" type="submit">Buscar</button>
                 </form>
             </div>
         </div>
 
-<!-- Sección de Productos -->
-<div class="row">
-    {% for producto in productos %}
-    <div class="col-md-3">
-        <div class="card">
-            <img src="{{ producto.imagen.url }}" class="card-img-top" alt="{{ producto.nombre }}">
-            <div class="card-body">
-                <h5 class="card-title">{{ producto.nombre }}</h5>
-                <p class="card-text">{{ producto.descripcion }}</p>
-                <p class="card-text">Precio: ${{ producto.precio }}</p>
-                <p class="card-text">Stock disponible: {{ producto.stock }} unidades</p> <!-- Muestra el stock disponible -->
-            
-                <!-- Formulario para seleccionar la cantidad -->
-                <form action="{% url 'agregar_al_carrito' producto.id %}" method="POST">
-                    {% csrf_token %}
-                    <div class="input-group mb-3">
-                        <input type="number" name="cantidad" class="form-control" value="1" min="1" max="{{ producto.stock }}" aria-label="Cantidad">
-                        <button class="btn btn-primary" type="submit">Agregar al Carrito</button>
+                <!-- Opciones de Pago -->
+                <div class="d-flex justify-content-center mb-4">
+                    <button class="btn btn-outline-light me-2">Pago Anual</button>
+                    <button class="btn btn-outline-light">Pago Mensual</button>
+                </div>
+
+        <!-- Sección de Productos -->
+        <div class="row justify-content-center">
+            {% for producto in productos %}
+            <div class="col-md-3">
+                <div class="card text-center mb-4">
+                    <img src="{{ producto.imagen.url }}" class="card-img-top" alt="{{ producto.nombre }}" style="border-radius: 10px;">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ producto.nombre }}</h5>
+                        <p class="card-text">{{ producto.descripcion }}</p>
+                        <p class="card-text"><del>{{ producto.precio_original }}</del> <span style="font-size: 1.5em;">${{ producto.precio }}</span> / unidad</p>
+                        <p class="card-text">Stock disponible: {{ producto.stock }} unidades</p>
+                        
+                        <!-- Comparación de Precios Externos -->
+                        {% if producto.precios_externos %}
+                            <h6>Comparación de Precios para {{ producto.nombre }}:</h6>
+                            <ul class="list-unstyled">
+                                {% for externo in producto.precios_externos %}
+                                    <li>
+                                        <a href="{{ externo.enlace }}" target="_blank" class="text-decoration-none text-light">{{ externo.titulo }}</a> - {{ externo.precio }}
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        {% else %}
+                            <p>No se encontraron precios externos para este producto.</p>
+                        {% endif %}
+
+                        <!-- Formulario para seleccionar la cantidad y agregar al carrito -->
+                        <form action="{% url 'agregar_al_carrito' producto.id %}" method="POST">
+                            {% csrf_token %}
+                            <div class="input-group mb-3">
+                                <input type="number" name="cantidad" class="form-control" value="1" min="1" max="{{ producto.stock }}" aria-label="Cantidad">
+                                <button class="btn btn-secondary" type="submit">Agregar al Carrito</button>
+                            </div>
+                        </form>
                     </div>
-                </form>
+                </div>
             </div>
+            {% endfor %}
         </div>
     </div>
-    {% empty %}
-    <p class="text-center">No se encontraron productos.</p>
-    {% endfor %}
-</div>
-
 
     <!-- Enlace a Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- Íconos de Bootstrap -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css" rel="stylesheet">
 </body>
 </html>
