@@ -5,6 +5,7 @@ from django.contrib.auth.decorators import login_required
 from .forms import RegistroUsuarioForm
 from .models import Producto, CartItem, Order
 from django.contrib import messages
+from .scraping import obtener_precios_externos
 
 def registro(request):
     if request.method == 'POST':
@@ -18,6 +19,7 @@ def registro(request):
         form = RegistroUsuarioForm()
     return render(request, 'registro.html', {'form': form})
 
+'''
 def productos(request):
     # Captura el término de búsqueda del parámetro 'q' en la URL
     query = request.GET.get('q')
@@ -27,6 +29,27 @@ def productos(request):
     else:
         # Muestra todos los productos si no hay búsqueda
         productos = Producto.objects.all()
+    return render(request, 'productos.html', {'productos': productos})
+'''
+
+def productos(request):
+    query = request.GET.get('q')
+    if query:
+        productos = Producto.objects.filter(nombre__icontains=query)
+    else:
+        productos = Producto.objects.all()
+
+    # Obtener los precios externos solo una vez, ya que es solo para "dona"
+    precios_externos = obtener_precios_externos("Dona")
+
+    # Debug: imprime los precios externos en la consola
+    print(precios_externos)  # Debería mostrar los precios externos en la consola de Django
+
+    # Añadir los precios externos a cada producto
+    for producto in productos:
+        # Añade los precios de "dona" para cada producto en el contexto
+        producto.precios_externos = precios_externos
+
     return render(request, 'productos.html', {'productos': productos})
 
 def agregar_al_carrito(request, producto_id):
