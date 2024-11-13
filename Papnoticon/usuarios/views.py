@@ -6,6 +6,7 @@ from .forms import RegistroUsuarioForm
 from .models import Producto, CartItem, Order
 from django.contrib import messages
 from .scraping import obtener_precios_externos
+from django.http import HttpResponse
 
 def registro(request):
     if request.method == 'POST':
@@ -143,3 +144,15 @@ def pagina_inicio(request):
 
 def presentacion(request):
     return render(request, 'presentacion.html')
+
+def contacto(request):
+    return render(request, 'contacto.html')
+
+def enviar_mensaje(request):
+    if request.method == "POST":
+        # Procesa el formulario y envía el mensaje
+        return HttpResponse("Mensaje enviado correctamente")
+    return redirect('contacto')  # Si se accede a la vista por GET, redirige a la página de contacto
+
+def comentarios(request):
+    return render(request, 'comentarios.html')
