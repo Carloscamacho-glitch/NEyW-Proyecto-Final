@@ -10,6 +10,21 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css" rel="stylesheet">
     <style>
         /* Estilos personalizados */
+
+                /* Ajuste de la barra de navegación */
+        .navbar {
+            background-color: #007bff;
+        }
+
+        .navbar-brand, .nav-link {
+            color: #000 !important; /* Cambia el color del texto a negro */
+            font-weight: 600;
+        }
+
+        .navbar-brand:hover, .nav-link:hover {
+            color: #333 !important; /* Color más oscuro al pasar el ratón */
+        }
+
         body {
             background-color: #f4f5f7;
             color: #333;
@@ -72,20 +87,6 @@
             font-size: 1.5em;
             font-weight: bold;
         }
-
-        /* Ajuste de la barra de navegación */
-        .navbar {
-            background-color: #007bff;
-        }
-
-        .navbar-brand, .nav-link {
-            color: #000 !important; /* Cambia el color del texto a negro */
-            font-weight: 600;
-        }
-
-        .navbar-brand:hover, .nav-link:hover {
-            color: #333 !important; /* Color más oscuro al pasar el ratón */
-        }
     </style>
 </head>
 <body>
@@ -143,7 +144,7 @@
                     <div class="card-body">
                         <h5 class="card-title">{{ producto.nombre }}</h5>
                         <p class="card-text">{{ producto.descripcion }}</p>
-                        <p class="card-text"><del>${{ producto.precio_original }}</del> <span>${{ producto.precio }}</span> / unidad</p>
+                        <p class="card-text"><del>{{ producto.precio_original }}</del> <span>${{ producto.precio }}</span> / unidad</p>
                         <p class="card-text">Stock disponible: {{ producto.stock }} unidades</p>
                         
                         <!-- Comparación de Precios Externos -->
@@ -158,6 +159,20 @@
                             </ul>
                         {% else %}
                             <p>No se encontraron precios externos para este producto.</p>
+                        {% endif %}
+
+                          <!-- Comparación de Precios Externos - Segunda Fuente -->
+                        {% if producto.precios_otro %}
+                            <h6>Comparación de Precios (Fuente 2):</h6>
+                            <ul class="list-unstyled">
+                                {% for otro in producto.precios_otro %}
+                                    <li>
+                                        <a href="{{ otro.enlace }}" target="_blank" class="text-decoration-none text-primary">{{ otro.titulo }}</a> - {{ otro.precio }}
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        {% else %}
+                            <p>No se encontraron precios externos para este producto en Fuente 2.</p>
                         {% endif %}
 
                         <!-- Formulario para seleccionar la cantidad y agregar al carrito -->

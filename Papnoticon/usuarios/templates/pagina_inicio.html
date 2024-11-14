@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    {% load static %}
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Página de Inicio</title>
@@ -30,23 +31,26 @@
 
         /* Estilos de la sección principal */
         .hero-section {
-            background-image: linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.4)), 
-                              url('https://via.placeholder.com/1920x600'); /* Imagen de fondo simulada */
-            background-size: cover;
-            background-position: center;
+            background: linear-gradient(135deg, #4a90e2, #9013fe);
             color: white;
-            padding: 60px 15px;
+            padding: 80px 15px;
             text-align: center;
-            border-radius: 8px;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
         }
 
         .hero-title {
-            font-size: 2.5rem;
+            font-size: 3rem;
             font-weight: 800;
+            margin-bottom: 10px;
         }
 
         .hero-subtitle {
-            font-size: 1.2rem;
+            font-size: 1.3rem;
+            max-width: 600px;
             margin-top: 15px;
         }
 
@@ -62,6 +66,32 @@
         .btn-primary-custom:hover {
             background-color: #156cbf;
             color: white;
+        }
+
+        /* Estilos de la sección de características */
+        .features-section {
+            padding: 60px 0;
+            text-align: center;
+        }
+        .features-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+        .feature-icon {
+            font-size: 2.5rem;
+            color: #1980e6;
+            margin-bottom: 15px;
+        }
+        .feature-card {
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s;
+        }
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.15);
         }
 
         /* Footer simple */
@@ -94,11 +124,40 @@
     </nav>
 
     <!-- Hero Section -->
-    <div class="container d-flex justify-content-center align-items-center mt-5" style="min-height: 80vh;">
-        <div class="hero-section col-md-8">
-            <h1 class="hero-title">¡Bienvenido a Panopticon!</h1>
-            <p class="hero-subtitle">Explora nuestros productos y disfruta de una experiencia de compra única.</p>
-            <a href="{% url 'productos' %}" class="btn btn-primary-custom mt-3">Explorar Productos</a>
+    <div class="container mt-5">
+        <div class="hero-section">
+            <h1 class="hero-title">Boost focus and productivity with Panopticon</h1>
+            <p class="hero-subtitle">Manage your device usage efficiently and stay on track with our intuitive and customizable app.</p>
+            <a href="{% url 'productos' %}" class="btn btn-primary-custom mt-3">Explore Products</a>
+        </div>
+    </div>
+
+    <!-- Features Section -->
+    <div class="container features-section">
+        <h2 class="features-title">Key Features</h2>
+        <p>Panopticon offers a variety of features to help you stay focused and productive, no matter your day’s agenda.</p>
+        <div class="row mt-4">
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <i class="feature-icon bi bi-calendar-check"></i>
+                    <h5>Agenda Management</h5>
+                    <p>Plan and schedule your tasks, limiting app and website usage based on your needs.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <i class="feature-icon bi bi-lock"></i>
+                    <h5>App Restriction</h5>
+                    <p>Block distracting apps and websites to stay focused on your work.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <i class="feature-icon bi bi-alarm"></i>
+                    <h5>Deadline Mode</h5>
+                    <p>Activate "DEADLINE" mode to block non-essential distractions during crucial times.</p>
+                </div>
+            </div>
         </div>
     </div>
 
