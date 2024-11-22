@@ -1,0 +1,196 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Productos</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        /* Estilos personalizados */
+
+                /* Ajuste de la barra de navegación */
+        .navbar {
+            background-color: #007bff;
+        }
+
+        .navbar-brand, .nav-link {
+            color: #000 !important; /* Cambia el color del texto a negro */
+            font-weight: 600;
+        }
+
+        .navbar-brand:hover, .nav-link:hover {
+            color: #333 !important; /* Color más oscuro al pasar el ratón */
+        }
+
+        body {
+            background-color: #f4f5f7;
+            color: #333;
+        }
+
+        .card {
+            background-color: #ffffff;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s;
+            color: #333;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .card-title {
+            font-weight: 700;
+            font-size: 1.5em;
+            color: #007bff;
+        }
+
+        .card-text {
+            color: #555;
+        }
+
+        .btn-secondary {
+            background-color: #007bff;
+            border: none;
+            width: 100%;
+            color: #fff;
+            font-weight: bold;
+        }
+
+        .btn-secondary:hover {
+            background-color: #0056b3;
+        }
+
+        .btn-outline-light {
+            border-color: #007bff;
+            color: #007bff;
+        }
+
+        .btn-outline-light:hover {
+            background-color: #007bff;
+            color: #ffffff;
+        }
+
+        /* Cambios en los precios y stock */
+        .card .card-text del {
+            color: #999;
+            font-size: 0.9em;
+        }
+
+        .card .card-text span {
+            color: #28a745;
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <!-- Barra de Navegación -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container">
+            <a class="navbar-brand" href="#">Panopticon</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="{% url 'pagina_inicio' %}">Inicio</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'productos' %}">Productos</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'contacto' %}">Contacto</a></li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'ver_carrito' %}">
+                            <i class="bi bi-cart"></i> Carrito
+                        </a>
+                    </li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'comentarios' %}">Comentarios</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'logout' %}">Cerrar Sesión</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Contenedor principal de Productos -->
+    <div class="container mt-5 text-center">
+        <h1 class="fw-bold">Productos</h1>
+        <p>Escoge el producto que mejor se ajuste a tus necesidades</p>
+
+        <!-- Campo de Búsqueda -->
+        <div class="row my-4">
+            <div class="col-md-6 offset-md-3">
+                <form class="d-flex" method="GET" action="{% url 'productos' %}">
+                    <input class="form-control me-2" type="search" name="q" placeholder="Buscar productos" aria-label="Buscar" value="{{ request.GET.q }}">
+                    <button class="btn btn-outline-light" type="submit">Buscar</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Opciones de Pago -->
+        <div class="d-flex justify-content-center mb-4">
+            <button class="btn btn-outline-light me-2">Pago Anual</button>
+            <button class="btn btn-outline-light">Pago Mensual</button>
+        </div>
+
+        <!-- Sección de Productos -->
+        <div class="row justify-content-center">
+            {% for producto in productos %}
+            <div class="col-md-3">
+                <div class="card text-center mb-4">
+                    <img src="{{ producto.imagen.url }}" class="card-img-top" alt="{{ producto.nombre }}" style="border-radius: 10px;">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ producto.nombre }}</h5>
+                        <p class="card-text">{{ producto.descripcion }}</p>
+                        <p class="card-text"><del>{{ producto.precio_original }}</del> <span>${{ producto.precio }}</span> / unidad</p>
+                        <p class="card-text">Stock disponible: {{ producto.stock }} unidades</p>
+                        
+                        <!-- Comparación de Precios Externos -->
+                        {% if producto.precios_externos %}
+                            <h6>Comparación de Precios para {{ producto.nombre }}:</h6>
+                            <ul class="list-unstyled">
+                                {% for externo in producto.precios_externos %}
+                                    <li>
+                                        <a href="{{ externo.enlace }}" target="_blank" class="text-decoration-none text-primary">{{ externo.titulo }}</a> - {{ externo.precio }}
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        {% else %}
+                            <p>No se encontraron precios externos para este producto.</p>
+                        {% endif %}
+
+                          <!-- Comparación de Precios Externos - Segunda Fuente -->
+                        {% if producto.precios_otro %}
+                            <h6>Comparación de Precios (Fuente 2):</h6>
+                            <ul class="list-unstyled">
+                                {% for otro in producto.precios_otro %}
+                                    <li>
+                                        <a href="{{ otro.enlace }}" target="_blank" class="text-decoration-none text-primary">{{ otro.titulo }}</a> - {{ otro.precio }}
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        {% else %}
+                            <p>No se encontraron precios externos para este producto en Fuente 2.</p>
+                        {% endif %}
+
+                        <!-- Formulario para seleccionar la cantidad y agregar al carrito -->
+                        <form action="{% url 'agregar_al_carrito' producto.id %}" method="POST">
+                            {% csrf_token %}
+                            <div class="input-group mb-3">
+                                <input type="number" name="cantidad" class="form-control" value="1" min="1" max="{{ producto.stock }}" aria-label="Cantidad">
+                                <button class="btn btn-secondary" type="submit">Agregar al Carrito</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Enlace a Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
