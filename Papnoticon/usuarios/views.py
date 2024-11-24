@@ -2,12 +2,14 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.models import Group
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth import logout
 from .forms import RegistroUsuarioForm
 from .models import Producto, CartItem, Order
 from django.contrib import messages
 from .scraping import obtener_precios_externos
 from .scraping2 import obtener_precios_externos2
 from django.http import HttpResponse
+import tweepy
 
 def registro(request):
     if request.method == 'POST':
@@ -50,6 +52,85 @@ def productos(request):
 
     return render(request, 'productos.html', {'productos': productos})
 
+def pagina_inicio(request):
+    return render(request, 'pagina_inicio.html')
+
+def presentacion(request):
+    return render(request, 'presentacion.html')
+
+def contacto(request):
+    return render(request, 'contacto.html')
+
+def enviar_mensaje(request):
+    if request.method == "POST":
+        # Procesa el formulario y envía el mensaje
+        return HttpResponse("Mensaje enviado correctamente")
+    return redirect('contacto')  # Si se accede a la vista por GET, redirige a la página de contacto
+
+def comentarios(request):
+    return render(request, 'comentarios.html')
+
+# Bearer Token para la API v2
+bearer_token = "AAAAAAAAAAAAAAAAAAAAAEGFxAEAAAAAw1Yym1Ug9Yo6Qor7yTDoNk3YY1E%3DBUVARfDlOP4QoI1zaWPc51LTgrvCtwOMu4aOPlQx6vl5QLLMZd"
+
+# Vista para obtener comentarios de Twitter
+def obtener_tweets(request):
+    print("Iniciando conexión con la API.")
+    client = tweepy.Client(bearer_token=bearer_token)
+    tweets = []
+
+    try:
+        query = "#Hola"
+        # Solicitar tweets con información de los autores y medios
+        response = client.search_recent_tweets(
+            query=query,
+            max_results=10,
+            tweet_fields=['text', 'author_id'],
+            expansions='author_id,attachments.media_keys',
+            user_fields=['username'],
+            media_fields=['url']  # Obtener la URL de los medios (imágenes)
+        )
+
+        if response.data:
+            # Crear un diccionario para obtener los nombres de usuario
+            user_map = {user.id: user.username for user in response.includes['users']}
+            media_map = {media.media_key: media.url for media in response.includes['media']}  # Mapeo de media_key a url
+
+            for tweet in response.data:
+                author_username = user_map.get(tweet.author_id, "Usuario desconocido")
+                media_urls = []  # Lista de URLs de medios
+                if 'attachments' in tweet.data:
+                    # Si hay medios adjuntos, obtener las URLs correspondientes
+                    for media_key in tweet.data['attachments']['media_keys']:
+                        media_url = media_map.get(media_key)
+                        if media_url:
+                            media_urls.append(media_url)
+
+                # Agregar el tweet y las imágenes (si existen)
+                print(f"Tweet encontrado: {tweet.text}, Autor: {author_username}, Medios: {media_urls}")
+                tweets.append({
+                    'texto': tweet.text,
+                    'autor': author_username,
+                    'media_urls': media_urls  # Lista de URLs de imágenes
+                })
+        else:
+            print("No se encontraron tweets.")
+
+    except tweepy.TweepyException as e:
+        print(f"Error al conectar con la API de Twitter: {e}")
+
+    return render(request, 'comentarios.html', {'tweets': tweets})
+
+def cerrar_sesion(request):
+    """Cierra la sesión del usuario y redirige a la página de inicio."""
+    logout(request)  # Cierra la sesión del usuario actual
+    return redirect('/')  # Redirige a la página de inicio
+
+
+
+
+
+@login_required
 def agregar_al_carrito(request, producto_id):
     producto = get_object_or_404(Producto, id=producto_id)
     cantidad = int(request.POST.get('cantidad', 1))  # Captura la cantidad seleccionada
@@ -70,6 +151,7 @@ def agregar_al_carrito(request, producto_id):
     messages.success(request, f"{producto.nombre} agregado al carrito con éxito.")
     return redirect('ver_carrito')
 
+@login_required
 def procesar_pedido(request):
     cart_items = CartItem.objects.filter(user=request.user)
     total = sum(item.producto.precio * item.cantidad for item in cart_items)
@@ -96,6 +178,7 @@ def procesar_pedido(request):
 
     return redirect('pagina_inicio')
 
+@login_required
 def ver_carrito(request):
     cart_items = CartItem.objects.filter(user=request.user)
     # Calcula el subtotal para cada artículo en el carrito
@@ -110,6 +193,7 @@ def ver_carrito(request):
     total = sum(item['subtotal'] for item in cart_items_with_subtotal)
     return render(request, 'carrito.html', {'cart_items_with_subtotal': cart_items_with_subtotal, 'total': total})
 
+@login_required
 def actualizar_carrito(request):
     if request.method == 'POST':
         for item_id in request.POST:
@@ -129,27 +213,10 @@ def actualizar_carrito(request):
                     
     return redirect('ver_carrito')
 
+@login_required
 def eliminar_del_carrito(request, item_id):
     cart_item = get_object_or_404(CartItem, id=item_id, user=request.user)
     cart_item.delete()
     messages.success(request, f"{cart_item.producto.nombre} ha sido eliminado del carrito.")
     return redirect('ver_carrito')
 
-@login_required
-def pagina_inicio(request):
-    return render(request, 'pagina_inicio.html')
-
-def presentacion(request):
-    return render(request, 'presentacion.html')
-
-def contacto(request):
-    return render(request, 'contacto.html')
-
-def enviar_mensaje(request):
-    if request.method == "POST":
-        # Procesa el formulario y envía el mensaje
-        return HttpResponse("Mensaje enviado correctamente")
-    return redirect('contacto')  # Si se accede a la vista por GET, redirige a la página de contacto
-
-def comentarios(request):
-    return render(request, 'comentarios.html')

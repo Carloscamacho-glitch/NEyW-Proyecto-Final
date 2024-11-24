@@ -1,57 +1,50 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    {% load static %}
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Comentarios</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        /* Estilo personalizado para las tarjetas de comentario */
-        .testimonial-card {
-            border: 1px solid #e7edf3;
-            border-radius: 8px;
-            padding: 20px;
-            background-color: #fff;
-            box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.05);
+        /* Estilos de la barra de navegación */
+        .navbar {
+            background-color: #f8f9fa;
         }
-        .testimonial-card img {
-            border-radius: 50%;
-            width: 50px;
-            height: 50px;
-            object-fit: cover;
-        }
-        .testimonial-card h6 {
-            font-size: 0.9em;
-            font-weight: bold;
-            color: #0e141b;
-        }
-        .testimonial-card p {
-            font-size: 0.85em;
-            color: #333;
-        }
-        .testimonial-author {
-            color: #0e141b;
-            font-weight: bold;
-        }
-        .testimonial-author-role {
-            color: #007bff;
-        }
+
         .navbar-brand, .nav-link {
-            color: #000 !important; /* Cambia el color del texto a negro */
+            color: #000 !important;
             font-weight: 600;
         }
 
         .navbar-brand:hover, .nav-link:hover {
-            color: #333 !important; /* Color más oscuro al pasar el ratón */
+            color: #333 !important;
+        }
+
+        /* Estilo principal */
+        body {
+            background-color: #f4f5f7;
+            font-family: 'Inter', sans-serif;
+            color: #333;
+        }
+
+        /* Footer simple */
+        footer {
+            background-color: #f8f9fa;
+            padding: 20px;
+            text-align: center;
+            color: #777;
         }
     </style>
 </head>
-<body class="bg-light">
-
+<body>
     <!-- Barra de Navegación -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <nav class="navbar navbar-expand-lg navbar-light">
         <div class="container">
-            <a class="navbar-brand" href="#">Panopticon</a>
+            <a class="navbar-brand d-flex align-items-center" href="{% url 'pagina_inicio' %}">
+                <img src="{% static 'Marca/Logo.png' %}" width="40" height="40" class="me-2">
+                Panopticon
+            </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
@@ -60,45 +53,53 @@
                     <li class="nav-item"><a class="nav-link" href="{% url 'pagina_inicio' %}">Inicio</a></li>
                     <li class="nav-item"><a class="nav-link" href="{% url 'productos' %}">Productos</a></li>
                     <li class="nav-item"><a class="nav-link" href="{% url 'contacto' %}">Contacto</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{% url 'logout' %}">Cerrar Sesión</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'comentarios' %}">Comentarios</a></li>
+                    <!-- Verificación de usuario autenticado -->
+                    {% if user.is_authenticated %}
+                    <li class="nav-item"><a class="nav-link" href="{% url 'ver_carrito' %}">Carrito</a></li>
+                    <li class="nav-item">
+                        <a href="{% url 'logout' %}" class="nav-link">Cerrar Sesión</a>
+                    </li>
+                    {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'login' %}">Iniciar Sesión</a>
+                    </li>
+                    {% endif %}
                 </ul>
             </div>
         </div>
     </nav>
+
+    <!-- Contenido Principal -->
     <div class="container mt-5">
-        <h2 class="text-center fw-bold mb-4">We're proud to help people focus</h2>
-        
-        <div class="row justify-content-center">
-            <div class="col-md-3 mb-4">
-                <div class="testimonial-card text-center">
-                    <img src="https://via.placeholder.com/50" alt="Avatar">
-                    <p>"I've tried a lot of different tools to help me focus while working, and I've found Focusly to be the best. The combination of features and the quality of the design make it stand out from other apps in this category."</p>
-                    <p class="testimonial-author">- Sarah, <span class="testimonial-author-role">freelance designer</span></p>
+        <!-- Tweets -->
+        <h2 class="text-center fw-bold mb-4">Tweets sobre nuestro servicio de Panopticon</h2>
+        {% if tweets %}
+        <div class="row">
+            {% for tweet in tweets %}
+            <div class="col-md-4 mb-4">
+                <div class="card p-3">
+                    <p class="text-muted">Autor: @{{ tweet.autor }}</p>
+                    <p class="mb-2">{{ tweet.texto }}</p>
+                    <!-- Si hay imágenes asociadas al tweet, las mostramos -->
+                    {% for media_url in tweet.media_urls %}
+                    <div class="tweet-media">
+                        <img src="{{ media_url }}" alt="Imagen de tweet" class="img-fluid">
+                    </div>
+                    {% endfor %}
                 </div>
             </div>
-            <div class="col-md-3 mb-4">
-                <div class="testimonial-card text-center">
-                    <img src="https://via.placeholder.com/50" alt="Avatar">
-                    <p>"I'm a freelance writer, and my work requires me to spend long hours in front of a computer screen. Focusly has been a game changer for me. It helps me stay on track and avoid distractions so I can get more done in less time."</p>
-                    <p class="testimonial-author">- Alex, <span class="testimonial-author-role">marketing consultant</span></p>
-                </div>
-            </div>
-            <div class="col-md-3 mb-4">
-                <div class="testimonial-card text-center">
-                    <img src="https://via.placeholder.com/50" alt="Avatar">
-                    <p>"I started using Focusly a few months ago, and it's made a big difference in my productivity. I love the ability to block specific websites and set daily usage limits on social media apps."</p>
-                    <p class="testimonial-author">- Emily, <span class="testimonial-author-role">software engineer</span></p>
-                </div>
-            </div>
-            <div class="col-md-3 mb-4">
-                <div class="testimonial-card text-center">
-                    <img src="https://via.placeholder.com/50" alt="Avatar">
-                    <p>"As a college student, I often struggle with staying focused while studying. Focusly has been an invaluable tool for me. It helps me avoid mindless scrolling on my phone and stay on task when I need to be productive."</p>
-                    <p class="testimonial-author">- Matt, <span class="testimonial-author-role">college student</span></p>
-                </div>
-            </div>
+            {% endfor %}
         </div>
+        {% else %}
+        <p class="text-center">No se encontraron tweets recientes con el hashtag especificado.</p>
+        {% endif %}
     </div>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2024 Panopticon. Todos los derechos reservados.</p>
+    </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
