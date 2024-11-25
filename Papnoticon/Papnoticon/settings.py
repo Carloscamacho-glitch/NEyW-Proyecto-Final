@@ -131,6 +131,11 @@ LOGIN_REDIRECT_URL = 'pagina_inicio'  # Redirige al inicio después de iniciar se
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
+
+#claves de stripe
+STRIPE_PUBLIC_KEY = 'pk_test_51QP936JzYi3Ij8xUowHZOSZZV2dUFBhJwnvJsChk8CG3RCP9IK3uDmNXHi0DcWvFCRIS4bAoWbp9JQypJyrGJQ66003fd2UmHB'
+STRIPE_SECRET_KEY = 'sk_test_51QP936JzYi3Ij8xU6Wuuay6zptqys08Uzu7Hi6O7hmgLBwr2GAMpLEpbIm20WbT2FnxRjnXFy8RaiMQGg74nWDay001K8ULD6c'
+
 #TWITTER
 CACHES = {
     'default': {
