@@ -19,4 +19,6 @@ urlpatterns = [
     path('contacto/', views.contacto, name='contacto'),
     path('enviar_mensaje/', views.enviar_mensaje, name='enviar_mensaje'),
     path('comentarios/', views.obtener_tweets, name='comentarios'),
+    path('checkout/', views.checkout, name='checkout'), # Ruta para hacer checkout
+    path('pago_exitoso/', views.pago_exitoso, name='pago_exitoso'), # Ruta de pago exitoso
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

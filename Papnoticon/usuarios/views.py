@@ -10,6 +10,10 @@ from .scraping import obtener_precios_externos
 from .scraping2 import obtener_precios_externos2
 from django.http import HttpResponse
 import tweepy
+import stripe
+from django.conf import settings
+from django.urls import reverse
+from django.http import JsonResponse
 
 def registro(request):
     if request.method == 'POST':
@@ -181,7 +185,6 @@ def procesar_pedido(request):
 @login_required
 def ver_carrito(request):
     cart_items = CartItem.objects.filter(user=request.user)
-    # Calcula el subtotal para cada artículo en el carrito
     cart_items_with_subtotal = [
         {
             'item': item,
@@ -189,9 +192,16 @@ def ver_carrito(request):
         }
         for item in cart_items
     ]
-    # Calcula el total general
     total = sum(item['subtotal'] for item in cart_items_with_subtotal)
-    return render(request, 'carrito.html', {'cart_items_with_subtotal': cart_items_with_subtotal, 'total': total})
+    return render(
+        request,
+        'carrito.html',
+        {
+            'cart_items_with_subtotal': cart_items_with_subtotal,
+            'total': total,
+            'STRIPE_PUBLIC_KEY': settings.STRIPE_PUBLIC_KEY,  # Aquí se pasa la clave
+        }
+    )
 
 @login_required
 def actualizar_carrito(request):
@@ -220,3 +230,73 @@ def eliminar_del_carrito(request, item_id):
     messages.success(request, f"{cart_item.producto.nombre} ha sido eliminado del carrito.")
     return redirect('ver_carrito')
 
+
+#Pasarela de pagos
+@login_required
+def checkout(request):
+    cart_items = CartItem.objects.filter(user=request.user)
+    line_items = []
+
+    for item in cart_items:
+        line_items.append({
+            'price_data': {
+                'currency': 'usd',
+                'product_data': {
+                    'name': item.producto.nombre,
+                },
+                'unit_amount': int(item.producto.precio * 100),  # Stripe trabaja en centavos
+            },
+            'quantity': item.cantidad,
+        })
+
+    # Configura la sesión de Stripe
+    stripe.api_key = settings.STRIPE_SECRET_KEY
+    session = stripe.checkout.Session.create(
+        payment_method_types=['card'],
+        line_items=line_items,
+        mode='payment',
+        success_url=request.build_absolute_uri(reverse('pago_exitoso')) + '?session_id={CHECKOUT_SESSION_ID}',
+        cancel_url=request.build_absolute_uri(reverse('ver_carrito')),
+    )
+
+    return JsonResponse({'id': session.id})
+
+@login_required
+def pago_exitoso(request):
+    session_id = request.GET.get('session_id')  # Identificador del pago
+
+    # Obtener los items del carrito
+    cart_items = CartItem.objects.filter(user=request.user)
+    total = sum(item.producto.precio * item.cantidad for item in cart_items)
+
+    if not cart_items.exists():
+        messages.error(request, "No hay productos en el carrito.")
+        return redirect('ver_carrito')
+
+    if session_id:  # Verificar si el pago fue exitoso
+        # Crear el pedido
+        order = Order.objects.create(user=request.user, total=total)
+        order.items.set(cart_items)  # Asignar los artículos del carrito al pedido
+        order.completed = True
+        order.save()
+
+        # Reducir el stock de cada producto
+        for item in cart_items:
+            producto = item.producto
+            if producto.stock >= item.cantidad:
+                producto.stock -= item.cantidad  # Descontar del stock
+                producto.save()
+            else:
+                # Manejar caso de stock insuficiente (aunque no debería ocurrir después del pago)
+                messages.error(request, f"No hay suficiente stock para {producto.nombre}.")
+                return redirect('ver_carrito')
+
+        # Limpiar el carrito después del pedido
+        cart_items.delete()
+
+        messages.success(request, "¡Pedido procesado y pago realizado con éxito!")
+        return redirect('ver_carrito')
+    else:
+        # Si no hay un `session_id`, asume que el pago no se realizó
+        messages.error(request, "No se pudo completar el pago. Inténtalo de nuevo.")
+        return redirect('ver_carrito')
