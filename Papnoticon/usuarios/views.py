@@ -1,19 +1,18 @@
 # usuarios/views.py
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth.models import Group
+from django.http import HttpResponse, JsonResponse, FileResponse
 from django.contrib.auth.decorators import login_required
+from .scraping2 import obtener_precios_externos2
+from .scraping import obtener_precios_externos
+from .models import Producto, CartItem, Order
+from django.contrib.auth.models import Group
 from django.contrib.auth import logout
 from .forms import RegistroUsuarioForm
-from .models import Producto, CartItem, Order
 from django.contrib import messages
-from .scraping import obtener_precios_externos
-from .scraping2 import obtener_precios_externos2
-from django.http import HttpResponse
-import tweepy
-import stripe
 from django.conf import settings
 from django.urls import reverse
-from django.http import JsonResponse
+from .forms import ContactForm
+import tweepy, stripe, csv
 
 def registro(request):
     if request.method == 'POST':
@@ -63,7 +62,22 @@ def presentacion(request):
     return render(request, 'presentacion.html')
 
 def contacto(request):
-    return render(request, 'contacto.html')
+    mensaje_enviado = False
+
+    if request.method == 'POST':
+        form = ContactForm(request.POST)
+        if form.is_valid():
+            # Aquí puedes manejar el envío del mensaje, por ejemplo, enviarlo por correo electrónico.
+            mensaje_enviado = True
+            # Puedes realizar cualquier otra acción, como guardar el mensaje en la base de datos.
+
+    else:
+        form = ContactForm()
+
+    return render(request, 'contacto.html', {
+        'form': form,
+        'mensaje_enviado': mensaje_enviado
+    })
 
 def enviar_mensaje(request):
     if request.method == "POST":
@@ -74,12 +88,10 @@ def enviar_mensaje(request):
 def comentarios(request):
     return render(request, 'comentarios.html')
 
-# Bearer Token para la API v2
-bearer_token = "AAAAAAAAAAAAAAAAAAAAAEGFxAEAAAAAw1Yym1Ug9Yo6Qor7yTDoNk3YY1E%3DBUVARfDlOP4QoI1zaWPc51LTgrvCtwOMu4aOPlQx6vl5QLLMZd"
-
 # Vista para obtener comentarios de Twitter
 def obtener_tweets(request):
-    print("Iniciando conexión con la API.")
+    bearer_token = settings.TWITTER_BEARER_TOKEN
+
     client = tweepy.Client(bearer_token=bearer_token)
     tweets = []
 
@@ -111,7 +123,6 @@ def obtener_tweets(request):
                             media_urls.append(media_url)
 
                 # Agregar el tweet y las imágenes (si existen)
-                print(f"Tweet encontrado: {tweet.text}, Autor: {author_username}, Medios: {media_urls}")
                 tweets.append({
                     'texto': tweet.text,
                     'autor': author_username,
@@ -131,9 +142,7 @@ def cerrar_sesion(request):
     return redirect('/')  # Redirige a la página de inicio
 
 
-
-
-
+#carrito
 @login_required
 def agregar_al_carrito(request, producto_id):
     producto = get_object_or_404(Producto, id=producto_id)
@@ -154,33 +163,6 @@ def agregar_al_carrito(request, producto_id):
     cart_item.save()
     messages.success(request, f"{producto.nombre} agregado al carrito con éxito.")
     return redirect('ver_carrito')
-
-@login_required
-def procesar_pedido(request):
-    cart_items = CartItem.objects.filter(user=request.user)
-    total = sum(item.producto.precio * item.cantidad for item in cart_items)
-    
-    # Crear el pedido
-    order = Order.objects.create(user=request.user, total=total)
-    order.items.set(cart_items)  # Agrega todos los artículos del carrito al pedido
-    order.completed = True
-    order.save()
-
-    # Reducir el stock de cada producto
-    for item in cart_items:
-        producto = item.producto
-        if producto.stock >= item.cantidad:
-            producto.stock -= item.cantidad  # Reduce el stock
-            producto.save()
-        else:
-            # Maneja el caso en el que no hay suficiente stock
-            # (por ejemplo, puedes mostrar un mensaje de error)
-            return redirect('ver_carrito')  # Redirigir al carrito o mostrar un mensaje de error
-
-    # Limpiar el carrito después de realizar el pedido
-    cart_items.delete()
-
-    return redirect('pagina_inicio')
 
 @login_required
 def ver_carrito(request):
@@ -300,3 +282,48 @@ def pago_exitoso(request):
         # Si no hay un `session_id`, asume que el pago no se realizó
         messages.error(request, "No se pudo completar el pago. Inténtalo de nuevo.")
         return redirect('ver_carrito')
+
+@login_required
+def mis_planes(request):
+    # Obtener los pedidos completados del usuario
+    pedidos = Order.objects.filter(user=request.user, completed=True)
+
+    # Verificar si hay pedidos
+    if not pedidos.exists():
+        return render(request, 'mis_planes.html', {'pedidos': None})
+
+    return render(request, 'mis_planes.html', {'pedidos': pedidos})
+
+#Descargar archivos
+@login_required
+def descargar_archivo_txt(request, pedido_id):
+    pedido = get_object_or_404(Order, id=pedido_id, user=request.user)
+
+    # Crear el contenido del archivo de texto
+    contenido = f"Detalles del Pedido #{pedido.id}\n"
+    contenido += f"Fecha: {pedido.created_at.strftime('%d-%m-%Y')}\n"
+    contenido += f"Total: ${pedido.total}\n\n"
+    contenido += "-" * 40 + "\n"
+    contenido += "-" * 40 + "\n"
+    contenido += "\n"
+    contenido += "Gracias por tu compra.\n"
+
+    # Crear la respuesta HTTP para descargar el archivo
+    response = HttpResponse(content_type='text/plain')
+    response['Content-Disposition'] = f'attachment; filename="pedido_{pedido.id}.txt"'
+    response.write(contenido)
+    return response
+
+@login_required
+def descargar_archivo_exe(request, pedido_id):
+    pedido = get_object_or_404(Order, id=pedido_id, user=request.user)
+
+    # Ruta del archivo .exe en el servidor
+    ruta_exe = 'static\EXE\Hola.exe'
+
+    # Crear la respuesta para el archivo .exe
+    response_exe = FileResponse(open(ruta_exe, 'rb'), content_type='application/octet-stream')
+    response_exe['Content-Disposition'] = 'attachment; filename="instalador.exe"'
+
+    # Regresar ambas descargas como opciones al usuario (uno tras otro).
+    return response_exe

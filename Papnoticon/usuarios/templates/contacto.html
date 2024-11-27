@@ -17,9 +17,9 @@
             font-weight: 600;
         }
 
-        .navbar-brand:hover, .nav-link:hover {
-            color: #333 !important;
-        }
+            .navbar-brand:hover, .nav-link:hover {
+                color: #333 !important;
+            }
 
         /* Estilo principal */
         body {
@@ -29,10 +29,6 @@
         }
 
         /* Fondo y contenedor principal */
-        body {
-            background-color: #f4f5f7;
-        }
-
         .contact-section {
             background-color: #ffffff;
             padding: 40px;
@@ -81,16 +77,12 @@
                     <li class="nav-item"><a class="nav-link" href="{% url 'productos' %}">Productos</a></li>
                     <li class="nav-item"><a class="nav-link" href="{% url 'contacto' %}">Contacto</a></li>
                     <li class="nav-item"><a class="nav-link" href="{% url 'comentarios' %}">Comentarios</a></li>
-                    <!-- Verificación de usuario autenticado -->
                     {% if user.is_authenticated %}
+                    <li class="nav-item"><a class="nav-link" href="{% url 'mis_planes' %}">Mis Planes</a></li>
                     <li class="nav-item"><a class="nav-link" href="{% url 'ver_carrito' %}">Carrito</a></li>
-                    <li class="nav-item">
-                        <a href="{% url 'logout' %}" class="nav-link">Cerrar Sesión</a>
-                    </li>
+                    <li class="nav-item"><a href="{% url 'logout' %}" class="nav-link">Cerrar Sesión</a></li>
                     {% else %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'login' %}">Iniciar Sesión</a>
-                    </li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'login' %}">Iniciar Sesión</a></li>
                     {% endif %}
                 </ul>
             </div>
@@ -102,7 +94,14 @@
         <div class="contact-section">
             <h2 class="text-center mb-4">Contáctanos</h2>
             <p class="text-center text-muted mb-4">¿Tienes preguntas? Envíanos un mensaje y te responderemos lo antes posible.</p>
-            <form action="{% url 'enviar_mensaje' %}" method="POST">
+
+            {% if mensaje_enviado %}
+            <div class="alert alert-success" role="alert">
+                Mensaje enviado correctamente. ¡Gracias por ponerte en contacto con nosotros!
+            </div>
+            {% endif %}
+
+            <form action="{% url 'contacto' %}" method="POST">
                 {% csrf_token %}
                 <div class="mb-3">
                     <label for="name" class="form-label">Nombre</label>
