@@ -1,0 +1,3 @@
+[2024-11-28 01:22:38] Publicación de texto | Post ID: 481272215072996_122098146854651942 | Mensaje: :D
+[2024-11-28 01:56:18] Publicación Programada | Post ID: 481272215072996_122098172132651942 | Mensaje: mensaje programado de prueba
+[2024-11-28 02:06:22] Publicación de texto | Post ID: 481272215072996_122098177250651942 | Mensaje: Mensaje 10 de Prueba 

@@ -1,0 +1,120 @@
+  /* Estilos de la barra de navegación */
+.navbar {
+    background-color: #f8f9fa;
+}
+
+.navbar-brand, .nav-link {
+    color: #000 !important;
+    font-weight: 600;
+}
+
+.navbar-brand:hover, .nav-link:hover {
+        color: #333 !important;
+    }
+
+/* Estilos generales */
+body {
+    font-family: 'Inter', Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f5f7; /* Fondo gris claro */
+    color: #333; /* Texto gris oscuro */
+}
+
+/* Header */
+header {
+    text-align: center;
+    padding: 20px;
+    background-color: #f8f9fa; /* Fondo claro */
+    border-bottom: 2px solid #ddd; /* Línea inferior suave */
+}
+
+header .logo {
+    width: 80px;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+    border-radius: 50%; /* Hacer el logo circular */
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); /* Sombra suave */
+}
+
+header h1 {
+    color: #1980e6; /* Azul moderno */
+    font-size: 2rem;
+    font-weight: 700;
+    margin-top: 15px;
+}
+
+
+/* Formularios */
+main form {
+    max-width: 600px;
+    margin: 20px auto;
+    padding: 25px;
+    border: 1px solid #ddd; /* Borde claro */
+    border-radius: 12px;
+    background-color: #fff; /* Fondo blanco */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra suave */
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+main form:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15); /* Sombra al pasar el mouse */
+}
+
+main h2 {
+    color: #1980e6; /* Azul moderno */
+    font-size: 1.5rem;
+    margin-bottom: 15px;
+    font-weight: bold;
+}
+
+label {
+    font-weight: 600;
+    display: block;
+    margin-bottom: 8px;
+    color: #333; /* Texto gris oscuro */
+}
+
+input, textarea, button {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ddd; /* Borde claro */
+    border-radius: 8px;
+    font-size: 16px;
+    color: #333; /* Texto gris oscuro */
+    background-color: #fff; /* Fondo blanco */
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); /* Sombra ligera */
+}
+
+input:focus, textarea:focus {
+    border-color: #1980e6; /* Azul moderno */
+    box-shadow: 0 0 5px rgba(25, 128, 230, 0.5); /* Efecto de foco */
+    outline: none;
+}
+
+button {
+    background-color: #1980e6; /* Azul moderno */
+    color: white;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    border: none;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+button:hover {
+    background-color: #156cbf; /* Azul más oscuro */
+    transform: scale(1.05); /* Pequeño aumento */
+}
+
+/* Footer */
+footer {
+    background-color: #f8f9fa;
+    padding: 20px;
+    text-align: center;
+    color: #777;
+    border-top: 1px solid #ddd; /* Línea superior suave */
+}
