@@ -94,12 +94,17 @@
                     <li class="nav-item"><a class="nav-link" href="{% url 'productos' %}">Productos</a></li>
                     <li class="nav-item"><a class="nav-link" href="{% url 'contacto' %}">Contacto</a></li>
                     <li class="nav-item"><a class="nav-link" href="{% url 'comentarios' %}">Comentarios</a></li>
+                    <!-- Verificación de usuario autenticado -->
                     {% if user.is_authenticated %}
-                    <li class="nav-item"><a class="nav-link" href="{% url 'mis_planes' %}">Mis Planes</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{% url 'ver_carrito' %}">Carrito</a></li>
-                    <li class="nav-item"><a href="{% url 'logout' %}" class="nav-link">Cerrar Sesión</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'mis_planes' %}">Mis Planes</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'ver_carrito' %}">Carrito</a></li>
+                        <!-- Verificación de superusuario para la pestaña de Publicaciones -->
+                        {% if user.is_superuser %}
+                            <li class="nav-item"><a class="nav-link" href="{% url 'mostrar_publicacion' %}">Publicaciones</a></li>
+                        {% endif %}
+                        <li class="nav-item"><a href="{% url 'logout' %}" class="nav-link">Cerrar Sesión</a></li>
                     {% else %}
-                    <li class="nav-item"><a class="nav-link" href="{% url 'login' %}">Iniciar Sesión</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'login' %}">Iniciar Sesión</a></li>
                     {% endif %}
                 </ul>
             </div>
