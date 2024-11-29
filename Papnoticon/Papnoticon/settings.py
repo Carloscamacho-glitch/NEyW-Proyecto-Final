@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'corsheaders',
     # Nuestra aplicacion
     'usuarios',
 ]
@@ -49,6 +50,12 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
+]
+
+CORS_ALLOWED_ORIGINS = [
+    "http://127.0.0.1:8000",  # Tu frontend Django
+    "http://localhost:8000",  # Si estás usando localhost también
 ]
 
 ROOT_URLCONF = 'Papnoticon.urls'
@@ -68,6 +75,8 @@ TEMPLATES = [
         },
     },
 ]
+
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'
 
 WSGI_APPLICATION = 'Papnoticon.wsgi.application'
 
@@ -113,18 +122,35 @@ USE_I18N = True
 
 USE_TZ = True
 
+CORS_ALLOW_ALL_ORIGINS = True
+
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = '/static/'
+STATICFILES_DIRS = [BASE_DIR / "static"]
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-LOGIN_REDIRECT_URL = 'pagina_inicio'
+##################################################Uauarios
+LOGIN_URL = 'login'
+LOGOUT_REDIRECT_URL = 'pagina_inicio'  # Redirige al inicio despu�s de cerrar sesi�n
+LOGIN_REDIRECT_URL = 'pagina_inicio'  # Redirige al inicio despu�s de iniciar sesi�n
+##################################################Uauarios
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
+
+# Clave twitter
+TWITTER_BEARER_TOKEN = 'AAAAAAAAAAAAAAAAAAAAAEGFxAEAAAAAw1Yym1Ug9Yo6Qor7yTDoNk3YY1E%3DBUVARfDlOP4QoI1zaWPc51LTgrvCtwOMu4aOPlQx6vl5QLLMZd'
+
+#Clave Facebook
+FACEBOOK_USER_ACCESS_TOKEN = "EAAPYhEmqoF4BOzKwnTFZBeYS2FYRUSKTL2M9va8F2YHD6tAarxVfJTLJVvt6kppnQQ1S1k5IfHru3BXjBAqxZBpBcJ3H3eA1ZAuVCTq3xclwBTCm9cVVeVhNSOs0fZBjEXLS35vmtPoB6DNZA0jA3t32qVTs72VgETZAV6x8Xjdbzo3OiNjvq5GvRy"
+
+#claves de stripe
+STRIPE_PUBLIC_KEY = 'pk_test_51QP936JzYi3Ij8xUowHZOSZZV2dUFBhJwnvJsChk8CG3RCP9IK3uDmNXHi0DcWvFCRIS4bAoWbp9JQypJyrGJQ66003fd2UmHB'
+STRIPE_SECRET_KEY = 'sk_test_51QP936JzYi3Ij8xU6Wuuay6zptqys08Uzu7Hi6O7hmgLBwr2GAMpLEpbIm20WbT2FnxRjnXFy8RaiMQGg74nWDay001K8ULD6c'
 
 #TWITTER
 CACHES = {

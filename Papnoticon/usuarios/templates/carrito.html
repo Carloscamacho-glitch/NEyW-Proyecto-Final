@@ -1,49 +1,127 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    {% load static %}
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Carrito de Compras</title>
     <!-- Enlace a Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        body {
+        /* Estilos de la barra de navegación */
+        .navbar {
             background-color: #f8f9fa;
         }
+
+        .navbar-brand, .nav-link {
+            color: #000 !important;
+            font-weight: 600;
+        }
+
+        .navbar-brand:hover, .nav-link:hover {
+            color: #333 !important;
+        }
+
+        /* Estilo principal */
+        body {
+            background-color: #f4f5f7;
+            font-family: 'Inter', sans-serif;
+            color: #333;
+        }
+
+        /* Footer simple */
+        footer {
+            background-color: #f8f9fa;
+            padding: 20px;
+            text-align: center;
+            color: #777;
+        }
+
         .table-striped tbody tr:nth-of-type(odd) {
             background-color: #f0f0f5;
         }
+
         .table thead th {
             background-color: #007bff;
             color: white;
         }
+
         h1 {
             color: #333;
             font-weight: 700;
         }
+
         .btn-outline-primary, .btn-success, .btn-danger, .btn-primary {
             font-weight: bold;
         }
+
         .table td, .table th {
             vertical-align: middle;
         }
+
         .total-amount {
             font-size: 1.5rem;
             color: #28a745;
             font-weight: 700;
         }
+
+        #checkout-button {
+            background-color: white; /* Color inicial del botón */
+            color: #007bff; /* Color del texto inicial */
+            border: 2px solid #007bff; /* Azul de Bootstrap */
+            transition: background-color 0.3s, color 0.3s; /* Animación suave */
+        }
+
+            #checkout-button:hover {
+                background-color: #007bff; /* Azul de Bootstrap */
+                color: white; /* Color del texto al pasar el mouse */
+                border: 2px solid #007bff; /* Mantener el borde azul */
+            }
     </style>
 </head>
 <body>
+    <!-- Barra de Navegación -->
+    <nav class="navbar navbar-expand-lg navbar-light">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center" href="{% url 'pagina_inicio' %}">
+                <img src="{% static 'Marca/Logo.png' %}" width="40" height="40" class="me-2">
+                Panopticon
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="{% url 'pagina_inicio' %}">Inicio</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'productos' %}">Productos</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'contacto' %}">Contacto</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'comentarios' %}">Comentarios</a></li>
+                    <!-- Verificación de usuario autenticado -->
+                    {% if user.is_authenticated %}
+                        <li class="nav-item"><a class="nav-link" href="{% url 'mis_planes' %}">Mis Planes</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'ver_carrito' %}">Carrito</a></li>
+                        <!-- Verificación de superusuario para la pestaña de Publicaciones -->
+                        {% if user.is_superuser %}
+                            <li class="nav-item"><a class="nav-link" href="{% url 'mostrar_publicacion' %}">Publicaciones</a></li>
+                        {% endif %}
+                        <li class="nav-item"><a href="{% url 'logout' %}" class="nav-link">Cerrar Sesión</a></li>
+                    {% else %}
+                        <li class="nav-item"><a class="nav-link" href="{% url 'login' %}">Iniciar Sesión</a></li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
     <!-- Sección para mostrar mensajes -->
     {% if messages %}
-        <div class="container mt-3">
-            {% for message in messages %}
-                <div class="alert alert-{{ message.tags }} text-center" role="alert">
-                    {{ message }}
-                </div>
-            {% endfor %}
+    <div class="container mt-3">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} text-center" role="alert">
+            {{ message }}
         </div>
+        {% endfor %}
+    </div>
     {% endif %}
 
     <div class="container mt-5">
@@ -57,58 +135,94 @@
         </div>
 
         {% if cart_items_with_subtotal %}
-            <form method="POST" action="{% url 'actualizar_carrito' %}">
-                {% csrf_token %}
-                <table class="table table-hover table-striped align-middle">
-                    <thead>
-                        <tr>
-                            <th>Producto</th>
-                            <th>Cantidad</th>
-                            <th>Precio Unitario</th>
-                            <th>Subtotal</th>
-                            <th>Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for item in cart_items_with_subtotal %}
-                        <tr>
-                            <td>{{ item.item.producto.nombre }}</td>
-                            <td>
-                                <input type="number" name="cantidad_{{ item.item.id }}" value="{{ item.item.cantidad }}" min="1" max="{{ item.item.producto.stock }}" class="form-control" style="width: 80px;">
-                            </td>
-                            <td><strong>${{ item.item.producto.precio }}</strong></td>
-                            <td><strong>${{ item.subtotal|floatformat:2 }}</strong></td>
-                            <td>
-                                <button type="submit" class="btn btn-primary btn-sm">
-                                    <i class="bi bi-arrow-repeat"></i> Actualizar
-                                </button>
-                                <a href="{% url 'eliminar_del_carrito' item.item.id %}" class="btn btn-danger btn-sm">
-                                    <i class="bi bi-trash"></i> Eliminar
-                                </a>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </form>
+        <form method="POST" action="{% url 'actualizar_carrito' %}">
+            {% csrf_token %}
+            <table class="table table-hover table-striped align-middle">
+                <thead>
+                    <tr>
+                        <th>Producto</th>
+                        <th>Cantidad</th>
+                        <th>Precio Unitario</th>
+                        <th>Subtotal</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in cart_items_with_subtotal %}
+                    <tr>
+                        <td>{{ item.item.producto.nombre }}</td>
+                        <td>
+                            <input type="number" name="cantidad_{{ item.item.id }}" value="{{ item.item.cantidad }}" min="1" max="{{ item.item.producto.stock }}" class="form-control" style="width: 80px;">
+                        </td>
+                        <td><strong>${{ item.item.producto.precio }}</strong></td>
+                        <td><strong>${{ item.subtotal|floatformat:2 }}</strong></td>
+                        <td>
+                            <button type="submit" class="btn btn-primary btn-sm">
+                                <i class="bi bi-arrow-repeat"></i> Actualizar
+                            </button>
+                            {% if item.item.id %}
+                            <a href="{% url 'eliminar_del_carrito' item.item.id %}" class="btn btn-danger btn-sm">
+                                <i class="bi bi-trash"></i> Eliminar
+                            </a>
+                            {% else %}
+                            <span>Producto no válido</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </form>
 
-            <div class="d-flex justify-content-end mt-4">
-                <h4 class="total-amount">Total: ${{ total|floatformat:2 }}</h4>
-            </div>
+        <div class="d-flex justify-content-end mt-4">
+            <h4 class="total-amount">Total: ${{ total|floatformat:2 }}</h4>
+        </div>
 
-            <div class="text-center mt-4">
-                <a href="{% url 'procesar_pedido' %}" class="btn btn-success btn-lg">
-                    <i class="bi bi-check-circle"></i> Procesar Pedido
-                </a>
-            </div>
         {% else %}
-            <div class="text-center mt-5">
-                <h3 class="text-muted">No tienes productos en el carrito.</h3>
-                <a href="{% url 'productos' %}" class="btn btn-outline-primary mt-3">Explorar Productos</a>
-            </div>
+        <div class="text-center mt-5">
+            <h3 class="text-muted">No tienes productos en el carrito.</h3>
+        </div>
         {% endif %}
     </div>
 
+    <!-- boton de pago -->
+    <div class="text-center mt-4">
+        {% if cart_items_with_subtotal %}
+        <button id="checkout-button" class="btn btn-primary btn-lg">
+            <i class="bi bi-credit-card"></i>Realizar el pago
+        </button>
+        {% else %}
+        <a href="{% url 'productos' %}" class="btn btn-outline-primary mt-3">Explorar Productos</a>
+        {% endif %}
+    </div>
+
+    <script src="https://js.stripe.com/v3/"></script>
+    <script>
+        const stripe = Stripe('{{ STRIPE_PUBLIC_KEY }}');
+
+        document.getElementById('checkout-button').addEventListener('click', function () {
+            fetch("{% url 'checkout' %}", {
+                method: "POST",
+                headers: {
+                    "X-CSRFToken": "{{ csrf_token }}"
+                },
+            })
+            .then(response => response.json())
+            .then(data => {
+                stripe.redirectToCheckout({ sessionId: data.id });
+            });
+        });
+    </script>
+
+    <div class="text-center mt-4">
+        
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2024 Panopticon. Todos los derechos reservados.</p>
+    </footer>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
-</html>
+    </html>
