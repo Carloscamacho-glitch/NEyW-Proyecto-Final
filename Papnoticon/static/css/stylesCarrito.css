@@ -1,0 +1,69 @@
+        /* Estilos de la barra de navegación */
+        .navbar {
+            background-color: #f8f9fa;
+        }
+
+        .navbar-brand, .nav-link {
+            color: #000 !important;
+            font-weight: 600;
+        }
+
+        .navbar-brand:hover, .nav-link:hover {
+            color: #333 !important;
+        }
+
+        /* Estilo principal */
+        body {
+            background-color: #f4f5f7;
+            font-family: 'Inter', sans-serif;
+            color: #333;
+        }
+
+        /* Footer simple */
+        footer {
+            background-color: #f8f9fa;
+            padding: 20px;
+            text-align: center;
+            color: #777;
+        }
+
+        .table-striped tbody tr:nth-of-type(odd) {
+            background-color: #f0f0f5;
+        }
+
+        .table thead th {
+            background-color: #007bff;
+            color: white;
+        }
+
+        h1 {
+            color: #333;
+            font-weight: 700;
+        }
+
+        .btn-outline-primary, .btn-success, .btn-danger, .btn-primary {
+            font-weight: bold;
+        }
+
+        .table td, .table th {
+            vertical-align: middle;
+        }
+
+        .total-amount {
+            font-size: 1.5rem;
+            color: #28a745;
+            font-weight: 700;
+        }
+
+        #checkout-button {
+            background-color: white; /* Color inicial del botón */
+            color: #007bff; /* Color del texto inicial */
+            border: 2px solid #007bff; /* Azul de Bootstrap */
+            transition: background-color 0.3s, color 0.3s; /* Animación suave */
+        }
+
+            #checkout-button:hover {
+                background-color: #007bff; /* Azul de Bootstrap */
+                color: white; /* Color del texto al pasar el mouse */
+                border: 2px solid #007bff; /* Mantener el borde azul */
+            }

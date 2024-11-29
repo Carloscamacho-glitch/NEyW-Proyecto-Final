@@ -1,111 +1,94 @@
-/* Estilo principal */
-body {
-    background-color: #f4f5f7; /* Fondo claro */
-    font-family: 'Inter', sans-serif;
-    color: #333;
-}
+        /* Estilo general para las tarjetas de productos */
+        .card {
+            border: none;
+            border-radius: 15px;
+            transition: all 0.3s ease-in-out;
+        }
 
-/* Contenedor general */
-.container {
-    margin-top: 50px;
-    text-align: center;
-}
+        .card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
 
-/* Títulos */
-h1 {
-    font-size: 2.5rem;
-    font-weight: bold;
-    color: #333;
-    margin-bottom: 20px;
-}
+        /* Mejorar la apariencia del footer */
+        footer {
+            background-color: #212529;
+            color: white;
+            padding: 20px 0;
+            margin-top: 40px;
+        }
 
-/* Estilo de botones de opciones de pago */
-.btn {
-    border: 2px solid #1980e6;
-    color: #1980e6;
-    font-weight: bold;
-    padding: 10px 20px;
-    margin-right: 10px;
-    transition: all 0.3s;
-    border-radius: 8px;
-}
+        footer p {
+            font-size: 14px;
+        }
 
-.btn:hover {
-    background-color: #1980e6;
-    color: white;
-}
+        /* Estilo para los botones */
+        .btn-success {
+            background-color: #28a745;
+            border-color: #28a745;
+        }
 
-/* Tarjetas de los planes */
-.card {
-    background-color: #fff;
-    border-radius: 12px;
-    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
-    padding: 20px;
-    margin: 20px;
-    transition: transform 0.3s, box-shadow 0.3s;
-}
+        .btn-outline-light {
+            border-color: #f8f9fa;
+            color: #000;
+        }
 
-.card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.15);
-}
+        .btn-outline-light:hover {
+            background-color: #f8f9fa;
+            color: #333;
+        }
 
-.card h5 {
-    font-size: 1.5rem;
-    color: #333;
-    margin-bottom: 10px;
-}
+        /* Estilo para la lista de comparación de precios */
+        .list-group-item {
+            font-size: 1.1em;
+            padding: 15px;
+        }
 
-.card .price {
-    font-size: 1.8rem;
-    font-weight: bold;
-    color: #28a745;
-}
+        /* Tarjetas de productos */
+        .card-img-top {
+            border-radius: 10px;
+            max-height: 200px;
+            object-fit: cover;
+        }
 
-.card .price del {
-    font-size: 1rem;
-    color: #999;
-    margin-right: 5px;
-}
+        /* Estilo para la fila de productos */
+        .row {
+            display: flex;
+            justify-content: space-evenly;
+            gap: 15px;
+        }
 
-.card .btn-subscribe {
-    background-color: #1980e6;
-    color: white;
-    font-weight: bold;
-    padding: 12px 24px;
-    border-radius: 8px;
-    text-decoration: none;
-    transition: background-color 0.3s;
-}
+        /* Espacio extra para la segunda página */
+        #comparacion-precios {
+            margin-top: 150vh; /* Altura de la pantalla */
+            padding-top: 50px;
+        }
 
-.card .btn-subscribe:hover {
-    background-color: #156cbf;
-}
+        /* Suavizado del scroll */
+        html {
+            scroll-behavior: smooth;
+        }
 
-/* Opciones de pago */
-.payment-toggle {
-    display: flex;
-    justify-content: center;
-    margin-bottom: 20px;
-}
+        /* Estilo para centrar el buscador */
+        .search-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
 
-.payment-toggle button {
-    flex: 1;
-    padding: 10px 20px;
-    border-radius: 8px;
-    font-weight: bold;
-    transition: background-color 0.3s, color 0.3s;
-}
+        /* Estilo para el botón de búsqueda */
+        .btn-search {
+            background-color: #007bff;
+            border-color: #007bff;
+        }
 
-.payment-toggle button.active {
-    background-color: #1980e6;
-    color: white;
-}
+        .btn-search:hover {
+            background-color: #0056b3;
+            border-color: #0056b3;
+        }
 
-/* Footer */
-footer {
-    background-color: #f8f9fa;
-    padding: 20px;
-    text-align: center;
-    color: #777;
-}
+        .input-group .form-control {
+            min-width: 0;
+        }
+
+
