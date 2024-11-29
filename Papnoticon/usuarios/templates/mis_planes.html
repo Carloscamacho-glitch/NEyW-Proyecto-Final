@@ -9,73 +9,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Íconos de Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css" rel="stylesheet">
-    <style>
-        /* Estilos de la barra de navegación */
-        .navbar {
-            background-color: #f8f9fa;
-        }
-
-        .navbar-brand, .nav-link {
-            color: #000 !important;
-            font-weight: 600;
-        }
-
-            .navbar-brand:hover, .nav-link:hover {
-                color: #333 !important;
-            }
-
-        /* Estilo principal */
-        body {
-            background-color: #f4f5f7;
-            font-family: 'Inter', sans-serif;
-            color: #333;
-        }
-
-        .page-title {
-            font-size: 2rem;
-            font-weight: bold;
-            color: #1980e6;
-            text-align: center;
-            margin-top: 30px;
-        }
-
-        .card {
-            margin: 20px 0;
-            border: none;
-            border-radius: 12px;
-            box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
-        }
-
-        .card-header {
-            background-color: #1980e6;
-            color: white;
-            font-weight: bold;
-            border-radius: 12px 12px 0 0;
-        }
-
-        .empty-state {
-            text-align: center;
-            margin-top: 50px;
-        }
-
-            .empty-state p {
-                font-size: 1.2rem;
-                color: #666;
-            }
-
-            .empty-state i {
-                font-size: 3rem;
-                color: #1980e6;
-                margin-bottom: 15px;
-            }
-
-        footer {
-            background-color: #f8f9fa;
-            padding: 20px;
-            text-align: center;
-            color: #777;
-        }
-    </style>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/stylesMisPlanes.css' %}">
 </head>
 <body>
     <!-- Barra de Navegación -->
@@ -132,7 +66,6 @@
                     </div>
                     <div class="card-body">
                         <h5 class="card-title">Total: ${{ pedido.total }}</h5>
-
                         <!-- Alineación de los botones a la derecha -->
                         <div class="d-flex justify-content-end">
                             <a href="{% url 'descargar_archivo_txt' pedido_id=pedido.id %}?type=txt" class="btn btn-primary me-2">
