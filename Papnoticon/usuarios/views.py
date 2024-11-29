@@ -145,7 +145,99 @@ def cerrar_sesion(request):
 def obtener_page_access_token(user_access_token, page_id):
     url = f"https://graph.facebook.com/v21.0/me/accounts?access_token={user_access_token}"
     response = requests.get(url)
+def pagina_inicio(request):
+    return render(request, 'pagina_inicio.html')
 
+def presentacion(request):
+    return render(request, 'presentacion.html')
+
+def publicaciones(request):
+    return render(request, 'facebook.html')
+
+def contacto(request):
+    mensaje_enviado = False
+
+    if request.method == 'POST':
+        form = ContactForm(request.POST)
+        if form.is_valid():
+            # Aquí puedes manejar el envío del mensaje, por ejemplo, enviarlo por correo electrónico.
+            mensaje_enviado = True
+            # Puedes realizar cualquier otra acción, como guardar el mensaje en la base de datos.
+
+    else:
+        form = ContactForm()
+
+    return render(request, 'contacto.html', {
+        'form': form,
+        'mensaje_enviado': mensaje_enviado
+    })
+
+def enviar_mensaje(request):
+    if request.method == "POST":
+        # Procesa el formulario y envía el mensaje
+        return HttpResponse("Mensaje enviado correctamente")
+    return redirect('contacto')  # Si se accede a la vista por GET, redirige a la página de contacto
+
+def comentarios(request):
+    return render(request, 'comentarios.html')
+
+# Vista para obtener comentarios de Twitter
+def obtener_tweets(request):
+    bearer_token = settings.TWITTER_BEARER_TOKEN
+
+    client = tweepy.Client(bearer_token=bearer_token)
+    tweets = []
+
+    try:
+        query = "#Hola"
+        # Solicitar tweets con información de los autores y medios
+        response = client.search_recent_tweets(
+            query=query,
+            max_results=10,
+            tweet_fields=['text', 'author_id'],
+            expansions='author_id,attachments.media_keys',
+            user_fields=['username'],
+            media_fields=['url']  # Obtener la URL de los medios (imágenes)
+        )
+
+        if response.data:
+            # Crear un diccionario para obtener los nombres de usuario
+            user_map = {user.id: user.username for user in response.includes['users']}
+            media_map = {media.media_key: media.url for media in response.includes['media']}  # Mapeo de media_key a url
+
+            for tweet in response.data:
+                author_username = user_map.get(tweet.author_id, "Usuario desconocido")
+                media_urls = []  # Lista de URLs de medios
+                if 'attachments' in tweet.data:
+                    # Si hay medios adjuntos, obtener las URLs correspondientes
+                    for media_key in tweet.data['attachments']['media_keys']:
+                        media_url = media_map.get(media_key)
+                        if media_url:
+                            media_urls.append(media_url)
+
+                # Agregar el tweet y las imágenes (si existen)
+                tweets.append({
+                    'texto': tweet.text,
+                    'autor': author_username,
+                    'media_urls': media_urls  # Lista de URLs de imágenes
+                })
+        else:
+            print("No se encontraron tweets.")
+
+    except tweepy.TweepyException as e:
+        print(f"Error al conectar con la API de Twitter: {e}")
+
+    return render(request, 'comentarios.html', {'tweets': tweets})
+
+def cerrar_sesion(request):
+    """Cierra la sesión del usuario y redirige a la página de inicio."""
+    logout(request)  # Cierra la sesión del usuario actual
+    return redirect('/')  # Redirige a la página de inicio
+
+# Función para obtener el PAGE_ACCESS_TOKEN automáticamente
+def obtener_page_access_token(user_access_token, page_id):
+    url = f"https://graph.facebook.com/v21.0/me/accounts?access_token={user_access_token}"
+    response = requests.get(url)
     if response.status_code == 200:
         data = response.json()
         for page in data.get("data", []):
