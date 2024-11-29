@@ -1,7 +1,10 @@
 # usuarios/views.py
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse, JsonResponse, FileResponse
+from django.core.exceptions import PermissionDenied
+from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.csrf import csrf_exempt
 from .scraping2 import obtener_precios_externos2
 from .scraping import obtener_precios_externos
 from .models import Producto, CartItem, Order
@@ -12,7 +15,9 @@ from django.contrib import messages
 from django.conf import settings
 from django.urls import reverse
 from .forms import ContactForm
-import tweepy, stripe, csv
+from datetime import datetime
+import tweepy, stripe, csv, requests
+import os, json
 
 def registro(request):
     if request.method == 'POST':
@@ -60,6 +65,9 @@ def pagina_inicio(request):
 
 def presentacion(request):
     return render(request, 'presentacion.html')
+
+def publicaciones(request):
+    return render(request, 'facebook.html')
 
 def contacto(request):
     mensaje_enviado = False
@@ -140,6 +148,98 @@ def cerrar_sesion(request):
     """Cierra la sesión del usuario y redirige a la página de inicio."""
     logout(request)  # Cierra la sesión del usuario actual
     return redirect('/')  # Redirige a la página de inicio
+
+# Función para obtener el PAGE_ACCESS_TOKEN automáticamente
+def obtener_page_access_token(user_access_token, page_id):
+    url = f"https://graph.facebook.com/v21.0/me/accounts?access_token={user_access_token}"
+    response = requests.get(url)
+
+    if response.status_code == 200:
+        data = response.json()
+        for page in data.get("data", []):
+            if page["id"] == page_id:
+                return page["access_token"]
+        print(f"Página con ID {page_id} no encontrada.")
+        return None
+    else:
+        raise Exception(f"Error al obtener el token de la página: {response.text}")
+
+# Función auxiliar para registrar publicaciones en un archivo
+def registrar_publicacion(post_id, mensaje, tipo):
+    archivo = "publicaciones_log.txt"
+    ruta_absoluta = os.path.abspath(archivo)
+    print(f"El archivo se intentará crear en: {ruta_absoluta}")  # Debug
+    try:
+        with open(archivo, "a") as file:
+            hora_actual = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            file.write(f"[{hora_actual}] {tipo} | Post ID: {post_id} | Mensaje: {mensaje}\n")
+        print(f"Publicación registrada en el archivo '{ruta_absoluta}'.")
+    except Exception as e:
+        print(f"Error al escribir en el archivo '{ruta_absoluta}': {e}")
+
+
+# Funciones auxiliares de publicación
+def publicar_en_pagina(page_id, mensaje, page_access_token):
+    url = f"https://graph.facebook.com/v21.0/{page_id}/feed"
+    params = {"message": mensaje, "access_token": page_access_token}
+    response = requests.post(url, params=params)
+    return response.json()
+
+
+def programar_publicacion(page_id, mensaje, tiempo_programado, page_access_token):
+    url = f"https://graph.facebook.com/v21.0/{page_id}/feed"
+    params = {
+        "message": mensaje,
+        "published": False,
+        "scheduled_publish_time": tiempo_programado,
+        "access_token": page_access_token
+    }
+    response = requests.post(url, params=params)
+    return response.json()
+
+
+def subir_imagen(page_id, imagen_path, mensaje, page_access_token):
+    try:
+        if not isinstance(page_access_token, str) or not page_access_token.strip():
+            return {"status": "error", "message": "El token de acceso no es válido o está vacío."}
+
+        url = f"https://graph.facebook.com/v21.0/{page_id}/photos"
+        with open(imagen_path, "rb") as img_file:
+            files = {"source": img_file}
+            params = {"message": mensaje, "access_token": page_access_token}
+
+            print(f"URL: {url}")
+            print(f"Params: {params}")
+            
+            response = requests.post(url, files=files, data=params)
+
+        if response.status_code == 200:
+            resultado = response.json()
+            if "post_id" in resultado:
+                return {"status": "success", "post_id": resultado["post_id"]}
+            else:
+                return {"status": "error", "message": "Imagen subida, pero no se devolvió el ID de la publicación."}
+        else:
+            try:
+                error_data = response.json()
+            except ValueError:
+                error_data = {"error": "No se pudo parsear la respuesta del servidor"}
+
+            return {
+                "status": "error",
+                "message": error_data.get("error", "Error desconocido"),
+                "details": response.text
+            }
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+
+
+def eliminar_publicacion(post_id, page_access_token):
+    url = f"https://graph.facebook.com/v21.0/{post_id}"
+    params = {"access_token": page_access_token}
+    response = requests.delete(url, params=params)
+    return response.json()
 
 
 #carrito
@@ -327,3 +427,126 @@ def descargar_archivo_exe(request, pedido_id):
 
     # Regresar ambas descargas como opciones al usuario (uno tras otro).
     return response_exe
+
+@login_required
+def mostrar_publicacion(request):
+    if request.user.is_authenticated and request.user.is_staff:
+        return render(request, 'facebook.html')  # Renderiza la plantilla directamente
+    return redirect('login')  # Redirige al login si no está autenticado
+
+
+@login_required  # Asegura que solo usuarios autenticados puedan acceder
+@csrf_exempt
+def publicar(request):
+    if not request.user.is_staff:  # Verifica si el usuario es administrador
+        return JsonResponse({"status": "error", "message": "Permiso denegado."}, status=403)
+    
+    if request.method == 'POST':
+        import json
+        data = json.loads(request.body)
+        mensaje = data.get('mensaje', '')
+        
+        # Obtener el PAGE_ACCESS_TOKEN
+        PAGE_ACCESS_TOKEN = obtener_page_access_token(settings.FACEBOOK_USER_ACCESS_TOKEN, '481272215072996')
+        
+        # Realizar la publicación
+        resultado = publicar_en_pagina('481272215072996', mensaje, PAGE_ACCESS_TOKEN)
+
+        if 'id' in resultado:
+            registrar_publicacion(resultado['id'], mensaje, 'Publicación de texto')
+
+        return JsonResponse(resultado)
+    return JsonResponse({"status": "error", "message": "Método no permitido."}, status=405)
+    
+
+@login_required  # Asegura que solo usuarios autenticados puedan acceder
+@csrf_exempt  # Desactiva protección CSRF, necesaria para usar request.body directamente
+def programar(request):
+    if not request.user.is_staff:  # Verifica si el usuario es administrador
+        return JsonResponse({"status": "error", "message": "Permiso denegado."}, status=403)
+
+    if request.method == 'POST':
+        import json
+        data = json.loads(request.body)  # Procesa el JSON recibido
+        mensaje = data.get('mensaje', '')
+        tiempo_programado = int(data.get('tiempo_programado', 0))
+
+        # Obtener el PAGE_ACCESS_TOKEN
+        PAGE_ACCESS_TOKEN = obtener_page_access_token(settings.FACEBOOK_USER_ACCESS_TOKEN, '481272215072996')
+
+        # Realizar la programación de la publicación
+        resultado = programar_publicacion('481272215072996', mensaje, tiempo_programado, PAGE_ACCESS_TOKEN)
+
+        if 'id' in resultado:
+            registrar_publicacion(resultado['id'], mensaje, 'Publicación Programada')
+
+        return JsonResponse(resultado)
+
+@login_required  # Asegura que solo usuarios autenticados puedan acceder
+@csrf_exempt  # Necesario para manejar datos de formularios sin CSRF
+def subir_imagen(request):
+    if not hasattr(request, 'user') or not request.user.is_authenticated:
+        return JsonResponse({"status": "error", "message": "Usuario no autenticado."}, status=401)
+
+    if not request.user.is_staff:  # Verifica si el usuario es administrador
+        return JsonResponse({"status": "error", "message": "Permiso denegado."}, status=403)
+
+    if request.method == 'POST':
+        import json
+        try:
+            mensaje = request.POST.get('mensaje', '')
+            imagen = request.FILES.get('imagen')
+
+            if not imagen:
+                return JsonResponse({"status": "error", "message": "No se proporcionó ninguna imagen."})
+
+            # Guardar la imagen temporalmente
+            temp_dir = "./temp"
+            os.makedirs(temp_dir, exist_ok=True)
+            imagen_path = os.path.join(temp_dir, imagen.name)
+
+            with open(imagen_path, 'wb+') as destination:
+                for chunk in imagen.chunks():
+                    destination.write(chunk)
+
+            # Obtener el PAGE_ACCESS_TOKEN
+            PAGE_ACCESS_TOKEN = obtener_page_access_token(settings.FACEBOOK_USER_ACCESS_TOKEN, '481272215072996')
+            if not PAGE_ACCESS_TOKEN:
+                return JsonResponse({"status": "error", "message": "No se pudo obtener el token de acceso."})
+
+            # Subir la imagen a Facebook
+            resultado = subir_imagen('481272215072996', imagen_path, mensaje, PAGE_ACCESS_TOKEN)
+
+            if not isinstance(resultado, dict):
+                return JsonResponse({"status": "error", "message": "Respuesta inesperada de subir_imagen."})
+
+            if resultado.get("status") == "success":
+                registrar_publicacion(resultado["post_id"], mensaje, "Publicación de imagen")
+
+            # Eliminar el archivo temporal
+            os.remove(imagen_path)
+            return JsonResponse(resultado)
+
+        except Exception as e:
+            return JsonResponse({"status": "error", "message": str(e)}, status=500)
+        
+@login_required  # Asegura que solo usuarios autenticados puedan acceder
+@csrf_exempt  # Necesario para usar request.body directamente
+def eliminar(request):
+    if not request.user.is_staff:  # Verifica si el usuario es administrador
+        raise PermissionDenied("No tienes permiso para realizar esta acción.")
+
+    if request.method == 'DELETE':
+        data = json.loads(request.body)  # Procesa el JSON recibido
+        post_id = data.get('post_id')
+
+        if not post_id:
+            return JsonResponse({"status": "error", "message": "Falta el ID de la publicación."})
+
+        # Obtener el PAGE_ACCESS_TOKEN
+        PAGE_ACCESS_TOKEN = obtener_page_access_token(settings.FACEBOOK_USER_ACCESS_TOKEN, '481272215072996')
+
+        # Eliminar la publicación en Facebook
+        resultado = eliminar_publicacion(post_id, PAGE_ACCESS_TOKEN)
+
+        return JsonResponse(resultado)
