@@ -71,11 +71,6 @@ pip install django pillow beautifulsoup4 requests tweepy stripe
 
 ---
 
-¡Y eso es todo! Ahora deberías poder visualizar y trabajar con tu aplicación web.
-``` 
-
-Este texto es más conciso y profesional, ideal para un repositorio en GitHub. 😊
-
 
 
 
