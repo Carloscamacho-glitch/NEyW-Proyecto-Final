@@ -1,20 +1,24 @@
 # NEyW-Proyecto-Final
 
-Integrantes:
+## SEMESTRE 2025-1
 
-  Arellano Hernández Israel . 318251020
-  
-  Badillo Aguilar Diego. 318095909 
-  
-  Camacho Martínez Juan Carlos . 318035530
-  
-  Constantino Cruz Pablo Giovanni . 318073538
-  
-  Juarez Paniagua Cristopher Israel . 318175890
-  
-  Salgado Valdés Andrés . 318146094
+## Integrantes:
 
-SEMESTRE 2025-1
+  - Arellano Hernández Israel . 318251020
+  
+  - Badillo Aguilar Diego. 318095909 
+  
+  - Camacho Martínez Juan Carlos . 318035530
+  
+  - Constantino Cruz Pablo Giovanni . 318073538
+  
+  - Juarez Paniagua Cristopher Israel . 318175890
+  
+  - Salgado Valdés Andrés . 318146094
+
+--- 
+
+# Guía Instalación
 
 Una vez que hayas descargado y descomprimido el Zip. En una ventana del CMD de tu PC.
 
