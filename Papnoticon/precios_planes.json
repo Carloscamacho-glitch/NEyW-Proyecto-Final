@@ -1,0 +1,30 @@
+{
+    "https://www.focusatwill.com/app/pages/pricing": [
+        [
+            "Monthly",
+            "$7.49"
+        ],
+        [
+            "Yearly",
+            "$52.49"
+        ],
+        [
+            "Two Year",
+            "$45.00"
+        ]
+    ],
+    "https://freedom.to/upgrade": [
+        [
+            "MONTHLY PREMIUM",
+            "$8.99/mo."
+        ],
+        [
+            "YEARLY PREMIUM",
+            "$3.33/mo."
+        ],
+        [
+            "FOREVER",
+            "$199"
+        ]
+    ]
+}
