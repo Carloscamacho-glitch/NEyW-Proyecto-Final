@@ -9,6 +9,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Íconos de Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="{% static 'css/stylesMain.css' %}"> <!-- Archivo CSS externo -->
 </head>
 <body>
@@ -30,15 +31,15 @@
                     <li class="nav-item"><a class="nav-link" href="{% url 'comentarios' %}">Comentarios</a></li>
                     <!-- Verificación de usuario autenticado -->
                     {% if user.is_authenticated %}
-                        <li class="nav-item"><a class="nav-link" href="{% url 'mis_planes' %}">Mis Planes</a></li>
-                        <li class="nav-item"><a class="nav-link" href="{% url 'ver_carrito' %}">Carrito</a></li>
-                        <!-- Verificación de superusuario para la pestaña de Publicaciones -->
-                        {% if user.is_superuser %}
-                            <li class="nav-item"><a class="nav-link" href="{% url 'mostrar_publicacion' %}">Publicaciones</a></li>
-                        {% endif %}
-                        <li class="nav-item"><a href="{% url 'logout' %}" class="nav-link">Cerrar Sesión</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'mis_planes' %}">Mis Planes</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'ver_carrito' %}">Carrito</a></li>
+                    <!-- Verificación de superusuario para la pestaña de Publicaciones -->
+                    {% if user.is_superuser %}
+                    <li class="nav-item"><a class="nav-link" href="{% url 'mostrar_publicacion' %}">Publicaciones</a></li>
+                    {% endif %}
+                    <li class="nav-item"><a href="{% url 'logout' %}" class="nav-link">Cerrar Sesión</a></li>
                     {% else %}
-                        <li class="nav-item"><a class="nav-link" href="{% url 'login' %}">Iniciar Sesión</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'login' %}">Iniciar Sesión</a></li>
                     {% endif %}
                 </ul>
             </div>
@@ -48,36 +49,73 @@
     <!-- Hero Section -->
     <div class="container mt-5">
         <div class="hero-section">
-            <h1 class="hero-title">Boost focus and productivity with Panopticon</h1>
-            <p class="hero-subtitle">Manage your device usage efficiently and stay on track with our intuitive and customizable app.</p>
-            <a href="{% url 'productos' %}" class="btn btn-primary-custom mt-3">Explore Products</a>
+            <h1 class="hero-title">Libera tu potencial, restringe las distraciones</h1>
+            <p class="hero-subtitle">Controla el uso de tus dispositivos de forma rapida con nuestra aplicacion intuitiva y personalizable</p>
+            <a href="{% url 'productos' %}" class="btn btn-primary-custom mt-3">Explora nuestros planes</a>
         </div>
     </div>
 
     <!-- Features Section -->
     <div class="container features-section">
-        <h2 class="features-title">Key Features</h2>
-        <p>Panopticon offers a variety of features to help you stay focused and productive, no matter your day’s agenda.</p>
+        <h2 class="features-title">Caracteristicas fundamentales</h2>
+        <p>Panopticon ofrece una variedad de funciones para ayudar a mantenerte concentrado y productivo en lo que de verdad importa</p>
+        <div class="row mt-4">
+            <div class="col-md-6">
+                <div class="feature-card">
+                    <i class="feature-icon bi bi-calendar-check"></i>
+                    <h5>Agenda</h5>
+                    <p>Planea y programa tus tareas vinculando los calendarios de Google o desde cero en nuestra app</p>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="feature-card">
+                    <i class="feature-icon bi bi-lock"></i>
+                    <h5>Restricción de Aplicaciones</h5>
+                    <p>Bloquea las aplicaciones y sitios web que te distraen de tus tareas</p>
+                </div>
+            </div>
+        </div>
+        <div class="row mt-4">
+            <div class="col-md-6">
+                <div class="feature-card">
+                    <i class="feature-icon bi bi-bar-chart"></i>
+                    <h5>Estadísticas de Rendimiento</h5>
+                    <p>Ve tus estadísticas de rendimiento para tener una mejor bitácora de tu eficiencia al usar nuestra aplicación</p>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="feature-card">
+                    <i class="feature-icon bi bi-alarm"></i>
+                    <h5>Deadline</h5>
+                    <p>Activa el modo "deadline" para bloquear todas las aplicaciones que no sean necesarias para realizar tu tarea</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container features-section">
+        <h2 class="features-title">Panes disponibles</h2>
+        <p>Ofrecemos tres modalidades distintas para usar Panopticon</p>
         <div class="row mt-4">
             <div class="col-md-4">
                 <div class="feature-card">
-                    <i class="feature-icon bi bi-calendar-check"></i>
-                    <h5>Agenda Management</h5>
-                    <p>Plan and schedule your tasks, limiting app and website usage based on your needs.</p>
+                    <i class="feature-icon fas fa-bug"></i>
+                    <h5>Pepe Grillo</h5>
+                    <p>Ideal para usuarios que solo requieren un guia simple que los ayude a realizar sus tareas</p>
                 </div>
             </div>
             <div class="col-md-4">
                 <div class="feature-card">
-                    <i class="feature-icon bi bi-lock"></i>
-                    <h5>App Restriction</h5>
-                    <p>Block distracting apps and websites to stay focused on your work.</p>
+                    <i class="feature-icon fas fa-user-ninja"></i>
+                    <h5>Sensei</h5>
+                    <p>Para aquellos usuarios que requieran una mayor restricion para las distracciones</p>
                 </div>
             </div>
             <div class="col-md-4">
                 <div class="feature-card">
-                    <i class="feature-icon bi bi-alarm"></i>
-                    <h5>Deadline Mode</h5>
-                    <p>Activate "DEADLINE" mode to block non-essential distractions during crucial times.</p>
+                    <i class="feature-icon fas fa-eye"></i>
+                    <h5>Gran Hermano</h5>
+                    <p>Pensado para empresas que busquen un mayor rendimiento de sus empleados en horas laborales</p>
                 </div>
             </div>
         </div>
