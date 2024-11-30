@@ -13,7 +13,6 @@ from .forms import RegistroUsuarioForm
 from django.contrib import messages
 from django.conf import settings
 from django.urls import reverse
-from .forms import ContactForm
 from datetime import datetime
 import tweepy, stripe, csv, requests
 import os, json
@@ -189,7 +188,7 @@ def obtener_tweets(request):
     tweets = []
 
     try:
-        query = "#Hola"
+        query = "#PanopticonNEyDW"
         # Solicitar tweets con información de los autores y medios
         response = client.search_recent_tweets(
             query=query,
