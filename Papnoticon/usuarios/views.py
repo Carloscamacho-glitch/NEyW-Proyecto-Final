@@ -14,6 +14,7 @@ from django.contrib import messages
 from django.conf import settings
 from django.urls import reverse
 from datetime import datetime
+from .forms import ContactForm
 import tweepy, stripe, csv, requests
 import os, json
 
