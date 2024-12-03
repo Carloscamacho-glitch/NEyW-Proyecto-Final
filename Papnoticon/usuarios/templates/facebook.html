@@ -9,10 +9,8 @@
     <link rel="stylesheet" type="text/css" href="{% static 'css/styles.css' %}"> <!-- Archivo CSS externo -->
     <script>
         const backendUrl = "";
-
         async function publicar() {
             const mensaje = document.getElementById("mensaje").value;
-
             const response = await fetch(`/publicar/`, {
                 method: "POST",
                 headers: {
@@ -21,17 +19,13 @@
                 },
                 body: JSON.stringify({ mensaje })
             });
-
             const resultado = await response.json();
             alert("Resultado de la publicación: " + JSON.stringify(resultado));
         }
-
         async function programar() {
             const mensaje = document.getElementById("mensaje_programar").value;
             const fecha = document.getElementById("fecha_programar").value;
-
             const tiempoProgramado = Math.floor(new Date(fecha).getTime() / 1000);
-
             const response = await fetch(`/programar/`, {
                 method: "POST",
                 headers: {
@@ -40,11 +34,9 @@
                 },
                 body: JSON.stringify({ mensaje, tiempo_programado: tiempoProgramado })
             });
-
             const resultado = await response.json();
             alert("Resultado de la programación: " + JSON.stringify(resultado));
         }
-
         async function subirImagen() {
             const mensaje = document.getElementById("mensaje_imagen").value;
             const imagen = document.getElementById("imagen").files[0];
@@ -69,11 +61,10 @@
                 console.error("Error al subir la imagen:", error);
                 alert("Ocurrió un error al subir la imagen.");
             }
-        }
 
+        }
         async function eliminar() {
             const postId = document.getElementById("post_id").value;
-
             const response = await fetch(`${backendUrl}/eliminar/`, {
                 method: "DELETE",
                 headers: {
@@ -82,7 +73,6 @@
                 },
                 body: JSON.stringify({ post_id: postId })
             });
-
             const resultado = await response.json();
             alert("Resultado de eliminar publicación: " + JSON.stringify(resultado));
         }
@@ -120,9 +110,14 @@
                     <li class="nav-item"><a class="nav-link" href="{% url 'productos' %}">Productos</a></li>
                     <li class="nav-item"><a class="nav-link" href="{% url 'contacto' %}">Contacto</a></li>
                     <li class="nav-item"><a class="nav-link" href="{% url 'comentarios' %}">Comentarios</a></li>
+                    <!-- Verificación de usuario autenticado -->
                     {% if user.is_authenticated %}
                     <li class="nav-item"><a class="nav-link" href="{% url 'mis_planes' %}">Mis Planes</a></li>
                     <li class="nav-item"><a class="nav-link" href="{% url 'ver_carrito' %}">Carrito</a></li>
+                    <!-- Verificación de superusuario para la pestaña de Publicaciones -->
+                    {% if user.is_superuser %}
+                    <li class="nav-item"><a class="nav-link" href="{% url 'mostrar_publicacion' %}">Publicaciones</a></li>
+                    {% endif %}
                     <li class="nav-item"><a href="{% url 'logout' %}" class="nav-link">Cerrar Sesión</a></li>
                     {% else %}
                     <li class="nav-item"><a class="nav-link" href="{% url 'login' %}">Iniciar Sesión</a></li>
