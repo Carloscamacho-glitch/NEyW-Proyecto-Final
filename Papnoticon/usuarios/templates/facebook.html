@@ -40,19 +40,28 @@
         async function subirImagen() {
             const mensaje = document.getElementById("mensaje_imagen").value;
             const imagen = document.getElementById("imagen").files[0];
+
+            // Crear el objeto FormData
             const formData = new FormData();
             formData.append("mensaje", mensaje);
             formData.append("imagen", imagen);
-            const response = await fetch(`/subir_imagen/`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "X-CSRFToken": getCookie("csrftoken") // Para protección CSRF
-                },
-                body: formData
-            });
-            const resultado = await response.json();
-            alert("Resultado de subir imagen: " + JSON.stringify(resultado));
+
+            try {
+                const response = await fetch(`/subir_imagen/`, {
+                    method: "POST",
+                    headers: {
+                        "X-CSRFToken": getCookie("csrftoken"), // Agregar CSRF token
+                    },
+                    body: formData, // No establecer Content-Type manualmente
+                });
+
+                const resultado = await response.json();
+                alert("Resultado de subir imagen: " + JSON.stringify(resultado));
+            } catch (error) {
+                console.error("Error al subir la imagen:", error);
+                alert("Ocurrió un error al subir la imagen.");
+            }
+
         }
         async function eliminar() {
             const postId = document.getElementById("post_id").value;

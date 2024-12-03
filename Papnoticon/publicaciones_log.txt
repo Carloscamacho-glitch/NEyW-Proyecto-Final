@@ -1,3 +1,8 @@
-[2024-11-28 01:22:38] Publicación de texto | Post ID: 481272215072996_122098146854651942 | Mensaje: :D
-[2024-11-28 01:56:18] Publicación Programada | Post ID: 481272215072996_122098172132651942 | Mensaje: mensaje programado de prueba
-[2024-11-28 02:06:22] Publicación de texto | Post ID: 481272215072996_122098177250651942 | Mensaje: Mensaje 10 de Prueba 
+[2024-11-28 01:22:38] Publicaci�n de texto | Post ID: 481272215072996_122098146854651942 | Mensaje: :D
+[2024-11-28 01:56:18] Publicaci�n Programada | Post ID: 481272215072996_122098172132651942 | Mensaje: mensaje programado de prueba
+[2024-11-28 02:06:22] Publicaci�n de texto | Post ID: 481272215072996_122098177250651942 | Mensaje: Mensaje 10 de Prueba 
+[2024-11-28 19:15:42] Publicaci�n de texto | Post ID: 481272215072996_122098929116651942 | Mensaje: :D
+[2024-12-02 22:08:18] Publicaci�n de texto | Post ID: 481272215072996_122103467738651942 | Mensaje: Prueba Un dia antes 
+[2024-12-02 22:28:18] Publicaci�n de texto | Post ID: 481272215072996_122103488366651942 | Mensaje: hola :D
+[2024-12-02 22:28:48] Publicaci�n de imagen | Post ID: 481272215072996_122103488960651942 | Mensaje: Prueba Final 
+
