@@ -1,0 +1,181 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "API de Publicaciones en Facebook",
+    "version": "1.0.0",
+    "description": "API para gestionar publicaciones en una página de Facebook."
+  },
+  "paths": {
+    "/mostrar_publicacion": {
+      "get": {
+        "summary": "Mostrar interfaz de publicaciones",
+        "description": "Renderiza una página HTML para la gestión de publicaciones si el usuario es autenticado y tiene permisos de administrador.",
+        "responses": {
+          "200": {
+            "description": "Página renderizada correctamente."
+          },
+          "302": {
+            "description": "Redirección al login si no está autenticado."
+          }
+        }
+      }
+    },
+    "/publicar": {
+      "post": {
+        "summary": "Publicar mensaje en Facebook",
+        "description": "Permite publicar un mensaje en una página de Facebook. Solo accesible por administradores autenticados.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "mensaje": {
+                    "type": "string",
+                    "description": "El mensaje a publicar."
+                  }
+                },
+                "required": [
+                  "mensaje"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Publicación exitosa."
+          },
+          "403": {
+            "description": "El usuario no tiene permisos para realizar esta acción."
+          },
+          "405": {
+            "description": "Método no permitido."
+          }
+        }
+      }
+    },
+    "/programar": {
+      "post": {
+        "summary": "Programar publicación",
+        "description": "Programa una publicación en Facebook para una hora futura. Requiere permisos de administrador.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "mensaje": {
+                    "type": "string",
+                    "description": "El mensaje a publicar."
+                  },
+                  "tiempo_programado": {
+                    "type": "integer",
+                    "description": "Timestamp Unix para programar la publicación."
+                  }
+                },
+                "required": [
+                  "mensaje",
+                  "tiempo_programado"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Publicación programada exitosamente."
+          },
+          "403": {
+            "description": "El usuario no tiene permisos para realizar esta acción."
+          },
+          "500": {
+            "description": "Error interno del servidor."
+          }
+        }
+      }
+    },
+    "/subir_imagen": {
+      "post": {
+        "summary": "Subir imagen a Facebook",
+        "description": "Permite subir una imagen con un mensaje asociado a una página de Facebook. Requiere permisos de administrador.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "mensaje": {
+                    "type": "string",
+                    "description": "Mensaje asociado a la imagen."
+                  },
+                  "imagen": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "Archivo de imagen a subir."
+                  }
+                },
+                "required": [
+                  "imagen"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Imagen subida exitosamente."
+          },
+          "401": {
+            "description": "Usuario no autenticado."
+          },
+          "403": {
+            "description": "El usuario no tiene permisos para realizar esta acción."
+          },
+          "500": {
+            "description": "Error interno del servidor."
+          }
+        }
+      }
+    },
+    "/eliminar": {
+      "delete": {
+        "summary": "Eliminar publicación en Facebook",
+        "description": "Elimina una publicación de una página de Facebook utilizando su ID. Requiere permisos de administrador.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "post_id": {
+                    "type": "string",
+                    "description": "ID de la publicación a eliminar."
+                  }
+                },
+                "required": [
+                  "post_id"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Publicación eliminada exitosamente."
+          },
+          "400": {
+            "description": "Falta el ID de la publicación."
+          },
+          "403": {
+            "description": "El usuario no tiene permisos para realizar esta acción."
+          }
+        }
+      }
+    }
+  }
+}
