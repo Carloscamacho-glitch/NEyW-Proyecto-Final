@@ -52,7 +52,22 @@ Una vez que hayas descargado y descomprimido el Zip. En una ventana del CMD de t
 Con el entorno virtual activado, instala las librerías necesarias mediante `pip`:
 
 ```
-pip install django pillow beautifulsoup4 requests tweepy stripe
+pip install django
+```
+```
+pip install pillow
+```
+```
+pip install beautifulsoup4
+```
+```
+pip install requests
+```
+```
+pip install tweepy
+```
+```
+pip install stripe
 ```
 
 ### Descripción de las Librerías
@@ -70,15 +85,33 @@ pip install django pillow beautifulsoup4 requests tweepy stripe
    ```bash
    cd Panopticon
    ```
-
-2. Inicia el servidor de desarrollo local:
+2. Crea las migraciones iniciales para la base de datos:
+   ```bash
+   python manage.py makemigrations
+   ```
+3. Aplica las migraciones a la base de datos:
+   ```bash
+   python manage.py migrate
+   ```
+4. Crea un superusuario para acceder al panel de administración de Django:
+   ```bash
+   python manage.py createsuperuser
+   ```
+5. Opcional: Accede a la base de datos desde la línea de comandos (si es necesario):
+   ```bash
+   python manage.py dbshell
+   ```
+6. Inicia el servidor de desarrollo local:
    ```bash
    python manage.py runserver
    ```
 
-3. Abre un navegador y accede a la URL proporcionada por la consola, generalmente:
+7. Accede a la aplicación en tu navegador:
    [http://127.0.0.1:8000/](http://127.0.0.1:8000/)
-
+   
+   También puedes acceder al panel de administración:
+   [http://127.0.0.1:8000/admin/]
+---
 ---
 
 
