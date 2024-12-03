@@ -1,0 +1,97 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "API de Contacto",
+    "description": "Endpoint para gestionar el formulario de contacto, permitiendo que los usuarios envíen mensajes al administrador del sistema.",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/contacto": {
+      "get": {
+        "summary": "Mostrar formulario de contacto",
+        "description": "Este endpoint carga un formulario de contacto en el cual los usuarios pueden ingresar su nombre, correo electrónico y mensaje para comunicarse con el administrador del sistema.",
+        "responses": {
+          "200": {
+            "description": "Formulario de contacto cargado exitosamente",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "type": "string",
+                  "example": "<html><body>Formulario de contacto</body></html>"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Procesar envío del formulario de contacto",
+        "description": "Este endpoint procesa los datos enviados a través del formulario de contacto. Si los datos son válidos, el mensaje se puede manejar (como enviarlo por correo electrónico o almacenarlo en la base de datos) y se informa al usuario que su mensaje fue enviado exitosamente.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "nombre": {
+                    "type": "string",
+                    "description": "El nombre completo del remitente que está enviando el mensaje.",
+                    "example": "Juan Pérez"
+                  },
+                  "email": {
+                    "type": "string",
+                    "description": "El correo electrónico del remitente.",
+                    "format": "email",
+                    "example": "juan.perez@example.com"
+                  },
+                  "mensaje": {
+                    "type": "string",
+                    "description": "El contenido del mensaje enviado por el usuario.",
+                    "example": "Hola, estoy interesado en sus servicios."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Mensaje enviado exitosamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "mensaje_enviado": {
+                      "type": "boolean",
+                      "description": "Indica si el mensaje fue enviado exitosamente.",
+                      "example": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error en los datos enviados",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "description": "Descripción del error ocurrido durante el envío del formulario, como campos faltantes o incorrectos.",
+                      "example": "Faltan campos obligatorios."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

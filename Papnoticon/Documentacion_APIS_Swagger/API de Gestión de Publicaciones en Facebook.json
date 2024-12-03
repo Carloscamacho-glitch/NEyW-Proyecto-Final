@@ -1,0 +1,341 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "API de Gestión de Publicaciones en Facebook",
+    "version": "1.0.0",
+    "description": "API para gestionar publicaciones en una página de Facebook, incluyendo su visualización, publicación, programación y eliminación."
+  },
+  "paths": {
+    "/mostrar_publicacion": {
+      "get": {
+        "summary": "Mostrar la página de publicaciones",
+        "description": "Renderiza una página HTML para la gestión de publicaciones si el usuario está autenticado y tiene permisos de administrador. Si no está autenticado, redirige al login.",
+        "responses": {
+          "200": {
+            "description": "Página renderizada correctamente.",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "302": {
+            "description": "Redirección al login si el usuario no está autenticado."
+          }
+        }
+      }
+    },
+    "/publicar": {
+      "post": {
+        "summary": "Publicar un mensaje en Facebook",
+        "description": "Permite a un usuario administrador publicar un mensaje en una página de Facebook.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "mensaje": {
+                    "type": "string",
+                    "description": "El mensaje que se desea publicar.",
+                    "example": "Este es un mensaje de prueba."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Publicación realizada con éxito.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "description": "ID de la publicación creada."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Permiso denegado. El usuario no es administrador."
+          },
+          "405": {
+            "description": "Método no permitido."
+          }
+        }
+      }
+    },
+    "/programar": {
+      "post": {
+        "summary": "Programar una publicación en Facebook",
+        "description": "Permite programar una publicación en una página de Facebook para un momento futuro. Solo accesible por administradores autenticados.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "mensaje": {
+                    "type": "string",
+                    "description": "El mensaje a publicar.",
+                    "example": "Este mensaje será publicado más tarde."
+                  },
+                  "tiempo_programado": {
+                    "type": "integer",
+                    "description": "Timestamp Unix indicando cuándo debe realizarse la publicación.",
+                    "example": 1715049600
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Publicación programada con éxito.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "description": "ID de la publicación programada."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Permiso denegado. El usuario no es administrador."
+          },
+          "500": {
+            "description": "Error interno del servidor."
+          }
+        }
+      }
+    },
+    "/subir_imagen": {
+      "post": {
+        "summary": "Subir una imagen con un mensaje a Facebook",
+        "description": "Permite a los administradores autenticados subir una imagen acompañada de un mensaje a una página de Facebook.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "mensaje": {
+                    "type": "string",
+                    "description": "El mensaje que acompañará a la imagen.",
+                    "example": "Esta es una publicación con imagen."
+                  },
+                  "imagen": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "La imagen a subir."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Imagen subida con éxito.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "post_id": {
+                      "type": "string",
+                      "description": "ID de la publicación creada en Facebook."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Usuario no autenticado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "error"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Usuario no autenticado."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Permiso denegado. El usuario no es administrador.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "error"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Permiso denegado."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error interno del servidor.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "error"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Error interno del servidor."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/eliminar": {
+      "delete": {
+        "summary": "Eliminar una publicación de Facebook",
+        "description": "Permite a los administradores autenticados eliminar una publicación específica en una página de Facebook usando su ID.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "post_id": {
+                    "type": "string",
+                    "description": "ID de la publicación a eliminar.",
+                    "example": "1234567890"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Publicación eliminada con éxito.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "success"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Publicación eliminada."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Falta el ID de la publicación.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "error"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Falta el ID de la publicación."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Usuario no autenticado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "error"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Usuario no autenticado."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Permiso denegado. El usuario no es administrador.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "error"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Permiso denegado."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

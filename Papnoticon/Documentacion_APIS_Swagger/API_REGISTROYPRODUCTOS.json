@@ -1,0 +1,124 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "API de Registro y Productos",
+    "description": "Endpoints para registrar usuarios y listar productos con información adicional sobre planes y precios.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8000",
+      "description": "Servidor de desarrollo"
+    }
+  ],
+  "paths": {
+    "/registro": {
+      "post": {
+        "summary": "Registrar un nuevo usuario",
+        "description": "Permite registrar un nuevo usuario en el sistema. Si el registro es exitoso, el usuario se asocia al grupo `Cliente` y es redirigido a la página de inicio de sesión.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "username": {
+                    "type": "string",
+                    "example": "nuevo_usuario"
+                  },
+                  "password": {
+                    "type": "string",
+                    "format": "password",
+                    "example": "contrasena_segura"
+                  },
+                  "email": {
+                    "type": "string",
+                    "example": "usuario@example.com"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "302": {
+            "description": "Registro exitoso y redirección a la página de inicio de sesión."
+          },
+          "400": {
+            "description": "Datos inválidos en el formulario de registro."
+          }
+        }
+      }
+    },
+    "/productos": {
+      "get": {
+        "summary": "Listar productos",
+        "description": "Devuelve una lista de productos disponibles en el sistema. Si se proporciona un parámetro de búsqueda (`q`), los resultados se filtran por nombre del producto que coincida parcialmente con la consulta. Adicionalmente, se incluye información sobre planes y precios obtenida de servicios externos.",
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "description": "Parámetro opcional para filtrar productos por nombre.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "example": "nombre_producto"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista de productos con información adicional de precios y planes.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "productos": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "integer",
+                            "example": 1
+                          },
+                          "nombre": {
+                            "type": "string",
+                            "example": "Producto A"
+                          },
+                          "descripcion": {
+                            "type": "string",
+                            "example": "Descripción del producto A."
+                          }
+                        }
+                      }
+                    },
+                    "precios_y_planes": {
+                      "type": "object",
+                      "properties": {
+                        "Familiar": {
+                          "type": "string",
+                          "example": "$20/mes"
+                        },
+                        "Individual": {
+                          "type": "string",
+                          "example": "$10/mes"
+                        },
+                        "Estudiantes": {
+                          "type": "string",
+                          "example": "$5/mes"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
