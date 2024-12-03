@@ -198,7 +198,7 @@ def programar_publicacion(page_id, mensaje, tiempo_programado, page_access_token
     return response.json()
 
 
-def subir_imagen(page_id, imagen_path, mensaje, page_access_token):
+def subir_imagen_a_facebook(page_id, imagen_path, mensaje, page_access_token):
     try:
         if not isinstance(page_access_token, str) or not page_access_token.strip():
             return {"status": "error", "message": "El token de acceso no es válido o está vacío."}
@@ -515,10 +515,10 @@ def subir_imagen(request):
                 return JsonResponse({"status": "error", "message": "No se pudo obtener el token de acceso."})
 
             # Subir la imagen a Facebook
-            resultado = subir_imagen('481272215072996', imagen_path, mensaje, PAGE_ACCESS_TOKEN)
+            resultado = subir_imagen_a_facebook('481272215072996', imagen_path, mensaje, PAGE_ACCESS_TOKEN)
 
             if not isinstance(resultado, dict):
-                return JsonResponse({"status": "error", "message": "Respuesta inesperada de subir_imagen."})
+                return JsonResponse({"status": "error", "message": "Respuesta inesperada de subir_imagen_a_facebook."})
 
             if resultado.get("status") == "success":
                 registrar_publicacion(resultado["post_id"], mensaje, "Publicación de imagen")
@@ -529,7 +529,7 @@ def subir_imagen(request):
 
         except Exception as e:
             return JsonResponse({"status": "error", "message": str(e)}, status=500)
-        
+
 @login_required  # Asegura que solo usuarios autenticados puedan acceder
 @csrf_exempt  # Necesario para usar request.body directamente
 def eliminar(request):
